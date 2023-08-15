@@ -8,6 +8,12 @@ function Dashboard() {
   useEffect(() => {
     // Appel au service pour obtenir la liste des commandes
     // Mettre à jour le state "orders" avec les données reçues
+    fetch("http://localhost:5000/api/orders") // Assurez-vous que l'URL est correcte
+      .then((response) => response.json())
+      .then((data) => setOrders(data))
+      .catch((error) =>
+        console.error("Erreur lors de la récupération des commandes", error)
+      );
 
     // Appel au service pour obtenir la liste des articles
     fetch("http://localhost:5000/api/items") // Assurez-vous que l'URL est correcte
@@ -69,6 +75,14 @@ function Dashboard() {
       </div>
       <div>
         <h3>Carte</h3>
+        <ul>
+          {items.map((item) => (
+            <li key={item.id}>
+              {item.title} - {item.price}{" "}
+              <button onClick={() => addToCart(item)}>Ajouter au panier</button>
+            </li>
+          ))}
+        </ul>
         <ul>
           {cart.map((cartItem) => (
             <li key={cartItem.id}>
