@@ -11,7 +11,7 @@ function Login() {
     try {
       // Appel au service d'authentification
       // Si l'authentification réussit, rediriger vers AdminPanel ou Dashboard
-      navigate("/admin");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Erreur d'authentification", error);
     }

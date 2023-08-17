@@ -1,19 +1,20 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { promisePool } = require("../config/db"); // Importer le promisePool
+const { promisePool } = require("../config/db");
 
 exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
       const user = {
-        email: req.body.email,
+        login: req.body.login,
         password: hash,
+        role: req.body.role || "user",
       };
 
       return promisePool.execute(
-        "INSERT INTO users (login, password) VALUES (?, ?)",
-        [user.email, user.password]
+        "INSERT INTO users (login, password, role) VALUES (?, ?, ?)",
+        [user.login, user.password, user.role]
       );
     })
     .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
@@ -25,7 +26,7 @@ exports.login = (req, res, next) => {
   const password = req.body.password;
 
   promisePool
-    .execute("SELECT * FROM users WHERE login = ?", [email])
+    .execute("SELECT * FROM users WHERE login = ?", [login])
     .then(([rows]) => {
       if (rows.length === 0) {
         return res
@@ -47,7 +48,6 @@ exports.login = (req, res, next) => {
             { expiresIn: "8h" }
           );
 
-          // Ajouter le console.log pour vérifier l'enregistrement du token
           console.log("Token enregistré dans le localStorage:", token);
 
           res.status(200).json({

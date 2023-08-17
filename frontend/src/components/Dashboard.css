@@ -1,0 +1,61 @@
+.dashboard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.category-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.category-filter button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.category-filter button.active {
+  background-color: #dedb14;
+  color: rgb(9, 8, 8);
+  font-weight: bold;
+}
+
+.orders-section,
+.menu-section {
+  margin-top: 20px;
+}
+
+.orders-section h3,
+.menu-section h3 {
+  margin-bottom: 10px;
+}
+
+.menu-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-section li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #dddddd;
+  padding-bottom: 5px;
+}
+
+.menu-section li.selected {
+  background-color: #f7f7f7; /* Couleur de fond pour les articles sélectionnés */
+  border-left: 4px solid #3498db; /* Bordure sur le côté gauche pour mettre en évidence */
+}
+
+.menu-section li button {
+  padding: 5px 8px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

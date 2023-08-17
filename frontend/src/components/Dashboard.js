@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
+import "./Dashboard.css";
+import TableOrders from "./TableOrders"; // Assurez-vous d'importer correctement le chemin
 
 function Dashboard() {
   const [orders, setOrders] = useState([]);
   const [cart, setCart] = useState([]);
-  const [items, setItems] = useState([]); // State pour les articles
+  const [items, setItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [tableOrders, setTableOrders] = useState({}); // Nouvel état pour les commandes par table
+  const numberOfTables = 10; // Nombre total de tables dans le restaurant
 
   useEffect(() => {
-    // Appel au service pour obtenir la liste des commandes
-    // Mettre à jour le state "orders" avec les données reçues
-    fetch("http://localhost:5000/api/orders") // Assurez-vous que l'URL est correcte
+    fetch("http://localhost:5000/api/orders")
       .then((response) => response.json())
       .then((data) => setOrders(data))
       .catch((error) =>
         console.error("Erreur lors de la récupération des commandes", error)
       );
 
-    // Appel au service pour obtenir la liste des articles
-    fetch("http://localhost:5000/api/items") // Assurez-vous que l'URL est correcte
+    fetch("http://localhost:5000/api/items")
       .then((response) => response.json())
       .then((data) => setItems(data))
       .catch((error) =>
@@ -25,7 +27,6 @@ function Dashboard() {
   }, []);
 
   const addToCart = (item) => {
-    // Ajouter l'article au panier (cart)
     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
     if (existingItem) {
       setCart((prevCart) =>
@@ -41,7 +42,6 @@ function Dashboard() {
   };
 
   const removeFromCart = (item) => {
-    // Retirer l'article du panier (cart)
     const updatedCart = cart.map((cartItem) =>
       cartItem.id === item.id
         ? { ...cartItem, quantity: cartItem.quantity - 1 }
@@ -51,34 +51,109 @@ function Dashboard() {
   };
 
   const generateKitchenTicket = () => {
-    // Générer le ticket pour la cuisine
+    console.log("Kitchen Ticket Generated:", cart);
+    setCart([]);
   };
 
   const generateBarTicket = () => {
-    // Générer le ticket pour le bar
+    console.log("Bar Ticket Generated:", cart);
+    // Ajouter le contenu de "cart" dans un ticket pour le bar
+    const barTicket = [...cart]; // Créer une copie de cart
+    // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
+    console.log("Ticket envoyé au bar:", barTicket);
   };
 
   const completeOrder = () => {
-    // Finaliser la commande (générer la facture, enregistrer en base de données, etc.)
+    if (Object.keys(tableOrders).length === 0) {
+      alert("Veuillez choisir une table avant de terminer la commande.");
+      return;
+    }
+
+    // Ajouter la commande au tableau des commandes par table
+    const tableNumber = Object.keys(tableOrders)[0]; // Prendre la première clé
+    const currentTableOrders = tableOrders[tableNumber] || [];
+    setTableOrders({
+      ...tableOrders,
+      [tableNumber]: [...currentTableOrders, ...cart],
+    });
+
+    setCart([]); // Réinitialiser le panier après avoir terminé la commande
   };
 
+  const filterItemsByCategory = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const filteredItems = selectedCategory
+    ? items.filter((item) => item.category_id === selectedCategory)
+    : items;
+
   return (
-    <div>
+    <div className="dashboard-container">
       <h2>Tableau de bord</h2>
-      <div>
+
+      <div className="category-filter">
+        <button
+          onClick={() => filterItemsByCategory(null)}
+          className={selectedCategory === null ? "active" : ""}
+        >
+          Tous
+        </button>
+        <button
+          onClick={() => filterItemsByCategory(1)}
+          className={selectedCategory === 1 ? "active" : ""}
+        >
+          Entrées
+        </button>
+        <button
+          onClick={() => filterItemsByCategory(2)}
+          className={selectedCategory === 2 ? "active" : ""}
+        >
+          Plats
+        </button>
+        <button
+          onClick={() => filterItemsByCategory(3)}
+          className={selectedCategory === 3 ? "active" : ""}
+        >
+          Desserts
+        </button>
+        <button
+          onClick={() => filterItemsByCategory(4)}
+          className={selectedCategory === 4 ? "active" : ""}
+        >
+          Boissons
+        </button>
+      </div>
+
+      <div className="orders-section">
         <h3>Commandes en cours</h3>
         <ul>
           {orders.map((order) => (
-            <li key={order.id}>{order.id}</li>
+            <li key={order.id}>
+              Commande #{order.id} - Date :{" "}
+              {new Date(order.order_date).toLocaleString()} - État :{" "}
+              {order.status}
+            </li>
           ))}
         </ul>
       </div>
-      <div>
+
+      <div className="menu-section">
         <h3>Carte</h3>
         <ul>
-          {items.map((item) => (
-            <li key={item.id}>
-              {item.title} - {item.price}{" "}
+          {filteredItems.map((item) => (
+            <li
+              key={item.id}
+              className={
+                cart.some((cartItem) => cartItem.id === item.id)
+                  ? "selected"
+                  : ""
+              }
+            >
+              <div className="item-info">
+                <span className="item-title">{item.title}</span>
+                <span className="item-price">{item.price}</span>
+              </div>
               <button onClick={() => addToCart(item)}>Ajouter au panier</button>
             </li>
           ))}
@@ -86,7 +161,13 @@ function Dashboard() {
         <ul>
           {cart.map((cartItem) => (
             <li key={cartItem.id}>
-              {cartItem.title} - {cartItem.price}{" "}
+              <div className="cart-item-info">
+                <span className="cart-item-title">{cartItem.title}</span>
+                <span className="cart-item-price">{cartItem.price}</span>
+                <span className="cart-item-quantity">
+                  Quantité : {cartItem.quantity}
+                </span>
+              </div>
               <button onClick={() => removeFromCart(cartItem)}>Retirer</button>
             </li>
           ))}
@@ -95,8 +176,114 @@ function Dashboard() {
         <button onClick={generateBarTicket}>Générer Ticket Bar</button>
         <button onClick={completeOrder}>Terminer Commande</button>
       </div>
+
+      {/* Liste des commandes par table */}
+      <div className="table-orders-section">
+        <h3>Commandes par Table</h3>
+        <div className="table-orders-container">
+          {Array.from({ length: numberOfTables }, (_, index) => (
+            <TableOrders
+              key={`table-${index + 1}`} // Utiliser une clé unique
+              tableNumber={index + 1}
+              tableOrders={tableOrders[index + 1] || []}
+              setTableOrders={(newOrders) =>
+                setTableOrders({
+                  ...tableOrders,
+                  [index + 1]: newOrders,
+                })
+              }
+              items={items}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default Dashboard;
+
+// oublies pas que ce code simplifié ne traite que de l'affichage dans la console et de la mise à jour du panier. Dans une application réelle, je dois implémenter les appels API appropriés pour générer les tickets, compléter les commandes et effectuer d'autres opérations nécessaires.
+
+// import React, { useState, useEffect, useContext } from "react";
+// import { Navigate } from "react-router-dom";
+// import axios from "axios";
+// import Categories from "../components/Categories/Categories";
+// import logo from "../assets/icons/logo.JPG";
+// import { AuthContext } from "../components/Admin/AuthContext";
+// import { CartContext } from "../components/Cart/CartContext";
+// import Table from "../components/Table/Table";
+// import Navigation from "../components/Navigation/Navigation";
+
+// const Dashboard = () => {
+//   const { isLoggedIn } = useContext(AuthContext);
+//   const [menuItems, setMenuItems] = useState([]);
+//   const [activeCategory, setActiveCategory] = useState("all");
+//   const [filteredItems, setFilteredItems] = useState([]);
+
+//   const { cartItems, addToCart, removeFromCart } = useContext(CartContext);
+
+//   const fetchMenuItems = async () => {
+//     try {
+//       const response = await axios.get("http://localhost:5000/api/items");
+//       setMenuItems(response.data);
+//     } catch (error) {
+//       console.error("Erreur lors de la récupération des items :", error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchMenuItems();
+//   }, []);
+
+//   useEffect(() => {
+//     if (activeCategory === "all") {
+//       setFilteredItems(menuItems);
+//     } else {
+//       const newItems = menuItems.filter(
+//         (item) => item.category_id === activeCategory
+//       );
+//       setFilteredItems(newItems);
+//     }
+//   }, [activeCategory, menuItems]);
+
+//   if (!isLoggedIn) {
+//     return <Navigate to="/LogAdmin" />;
+//   }
+
+//   return (
+//     <div>
+//       <Navigation />
+//       <main>
+//         <section className="menu section">
+//           <div className="title">
+//             <img src={logo} alt="logo" className="logo" />
+//             <h2>Resto App</h2>
+//             <div className="underline"></div>
+//           </div>
+//           <Categories
+//             categories={[
+//               { id: "all", name: "Tout" },
+//               { id: 1, name: "Entrées" },
+//               { id: 2, name: "Plats" },
+//               { id: 3, name: "Desserts" },
+//               { id: 4, name: "Boissons" },
+//             ]}
+//             activeCategory={activeCategory}
+//             filterItems={setActiveCategory}
+//           />
+//           <div className="table-container">
+//             <Table
+//               items={filteredItems}
+//               cartItems={cartItems}
+//               addToCart={addToCart}
+//               removeFromCart={removeFromCart}
+//             />
+//           </div>
+//         </section>
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default Dashboard;
