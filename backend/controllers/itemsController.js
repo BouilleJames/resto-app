@@ -1,8 +1,9 @@
-const connection = require("../server").connection;
+const sequelize = require("../config/db");
+const { item } = require("../models/Item");
 
 const getItems = async (req, res) => {
   try {
-    const [items] = await connection.query("SELECT * FROM items");
+    const [items] = await sequelize.query("SELECT * FROM items");
     res.status(200).json(items);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching items" });
@@ -12,7 +13,7 @@ const getItems = async (req, res) => {
 const createItem = async (req, res) => {
   try {
     const { name, price } = req.body;
-    await connection.query("INSERT INTO items (name, price) VALUES (?, ?)", [
+    await sequelize.query("INSERT INTO items (name, price) VALUES (?, ?)", [
       name,
       price,
     ]);
@@ -26,10 +27,11 @@ const updateItem = async (req, res) => {
   try {
     const itemId = req.params.id;
     const { name, price } = req.body;
-    await connection.query(
-      "UPDATE items SET name = ?, price = ? WHERE id = ?",
-      [name, price, itemId]
-    );
+    await sequelize.query("UPDATE items SET name = ?, price = ? WHERE id = ?", [
+      name,
+      price,
+      itemId,
+    ]);
     res.status(200).json({ message: "Item updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "An error occurred while updating an item" });
@@ -39,7 +41,7 @@ const updateItem = async (req, res) => {
 const deleteItem = async (req, res) => {
   try {
     const itemId = req.params.id;
-    await connection.query("DELETE FROM items WHERE id = ?", [itemId]);
+    await sequelize.query("DELETE FROM items WHERE id = ?", [itemId]);
     res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "An error occurred while deleting an item" });

@@ -8,18 +8,15 @@ const Table = sequelize.define("tables", {
     autoIncrement: true,
     allowNull: false,
   },
-  table_number: {
+  tableNumber: {
+    // Utiliser le même nom que dans la migration
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  capacity: {
+  totalCovers: {
+    // Utiliser le même nom que dans la migration
     type: Sequelize.INTEGER,
     allowNull: false,
-  },
-  total_covers: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
   },
 });
 

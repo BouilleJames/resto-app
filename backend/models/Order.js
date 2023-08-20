@@ -11,10 +11,18 @@ const Order = sequelize.define("orders", {
   user_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    references: {
+      model: "users",
+      key: "id",
+    },
   },
-  table_number: {
+  table_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    references: {
+      model: "tables",
+      key: "id",
+    },
   },
   order_date: {
     type: Sequelize.DATE,

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Assurez-vous d'importer axios si ce n'est pas déjà fait
 import "./Login.css";
 
 function Login() {
@@ -9,8 +10,19 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      // Appel au service d'authentification
-      // Si l'authentification réussit, rediriger vers AdminPanel ou Dashboard
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login", // Endpoint de connexion
+        {
+          username: username, // Envoyer les informations de connexion
+          password: password,
+        }
+      );
+
+      console.log("Réponse du serveur:", response.data);
+
+      // Ici, vous pourriez effectuer des actions après une connexion réussie,
+      // telles que stocker le jeton d'authentification, rediriger l'utilisateur, etc.
+      // Par exemple, vous pourriez rediriger l'utilisateur vers le dashboard :
       navigate("/dashboard");
     } catch (error) {
       console.error("Erreur d'authentification", error);

@@ -1,7 +1,7 @@
 // Code de connexion à la base de données avec Sequelize
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("app_resto", "db_user", "db_password", {
+const sequelize = new Sequelize("app_resto", "root", "root", {
   host: "localhost",
   dialect: "mysql",
   pool: {

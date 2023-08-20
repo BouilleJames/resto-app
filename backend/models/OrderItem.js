@@ -11,10 +11,18 @@ const OrderItem = sequelize.define("order_items", {
   order_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    references: {
+      model: "orders",
+      key: "id",
+    },
   },
   item_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    references: {
+      model: "items",
+      key: "id",
+    },
   },
   quantity: {
     type: Sequelize.INTEGER,

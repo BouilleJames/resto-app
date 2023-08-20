@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./TableOrders.css";
+import axios from "axios";
 
 function TableOrders({ tableNumber }) {
-  const [tableOrders, setTableOrders] = useState([]); // État pour les commandes de la table
+  const [tableOrders, setTableOrders] = useState([]);
   const [items, setItems] = useState([]);
-  const [tableOrder, setTableOrder] = useState([]); // État pour la commande en cours
+  const [tableOrder, setTableOrder] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [setTableNumber] = useState("");
 
   useEffect(() => {
-    // Fetch items and table orders based on tableNumber
-    fetch(`http://localhost:5000/api/table/${tableNumber}/orders`)
-      .then((response) => response.json())
-      .then((data) => setTableOrders(data))
+    axios
+      .get(`http://localhost:5000/api/tables/${tableNumber}/orders`)
+      .then((response) => setTableOrders(response.data))
       .catch((error) =>
         console.error(
           "Erreur lors de la récupération des commandes de la table",
@@ -18,13 +21,18 @@ function TableOrders({ tableNumber }) {
         )
       );
 
-    fetch("http://localhost:5000/api/items")
-      .then((response) => response.json())
-      .then((data) => setItems(data))
+    axios
+      .get("http://localhost:5000/api/items")
+      .then((response) => setItems(response.data))
       .catch((error) =>
         console.error("Erreur lors de la récupération des articles", error)
       );
   }, [tableNumber]);
+
+  // Vérifiez si les articles sont chargés avant d'afficher le contenu
+  if (items.length === 0) {
+    return <div>Chargement des articles...</div>;
+  }
 
   const addToTableOrder = (item) => {
     setTableOrder((prevOrder) => [...prevOrder, item]);
@@ -37,10 +45,8 @@ function TableOrders({ tableNumber }) {
   };
 
   const generateTableOrder = () => {
-    // Logic to generate and send table order to kitchen and bar
     console.log("Commande générée :", tableOrder);
 
-    // Consolidate orders for the same table
     const existingTableOrder = tableOrders.find(
       (order) => order.tableNumber === tableNumber
     );
@@ -48,7 +54,6 @@ function TableOrders({ tableNumber }) {
       ? [...existingTableOrder.items, ...tableOrder]
       : tableOrder;
 
-    // Update table orders
     if (existingTableOrder) {
       const updatedOrders = tableOrders.map((order) =>
         order.tableNumber === tableNumber
@@ -63,21 +68,59 @@ function TableOrders({ tableNumber }) {
       ]);
     }
 
-    // Clear the table order after generating
     setTableOrder([]);
   };
 
-  // Calculate total price of the current table order
   const tableOrderTotal = tableOrder.reduce(
     (total, item) => total + item.price,
     0
   );
 
+  const filteredItems = selectedCategory
+    ? items.filter((item) => item.category_id === selectedCategory)
+    : items;
+
+  const addToCart = (item) => {
+    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+    if (existingItem) {
+      setCart((prevCart) =>
+        prevCart.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        )
+      );
+    } else {
+      setCart((prevCart) => [...prevCart, { ...item, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (item) => {
+    const updatedCart = cart.map((cartItem) =>
+      cartItem.id === item.id
+        ? { ...cartItem, quantity: cartItem.quantity - 1 }
+        : cartItem
+    );
+    setCart(updatedCart.filter((cartItem) => cartItem.quantity > 0));
+  };
+
+  const completeOrder = () => {
+    if (Object.keys(tableOrders).length === 0) {
+      alert("Veuillez choisir une table avant de terminer la commande.");
+      return;
+    }
+    console.log("Commande terminée:", tableOrders);
+    // Envoyer la commande au serveur (vous pouvez utiliser une API, WebSocket, etc.)
+    // Réinitialiser les états
+    setTableNumber("");
+    setTableOrders([]);
+    setTableOrder([]);
+  };
+
   return (
     <div className="table-orders-container">
       <h2>Commandes de la table {tableNumber}</h2>
       <div className="order-list">
-        {/* Display the table orders */}
         <h3>Commande en cours :</h3>
         <ul>
           {tableOrder.map((item) => (
@@ -93,16 +136,82 @@ function TableOrders({ tableNumber }) {
         <button onClick={generateTableOrder}>Générer la commande</button>
       </div>
       <div className="items-list">
-        {/* Display the items */}
         <h3>Articles disponibles :</h3>
+        <div className="category-filter">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={selectedCategory === null ? "active" : ""}
+          >
+            Tous
+          </button>
+          <button
+            onClick={() => setSelectedCategory(1)}
+            className={selectedCategory === 1 ? "active" : ""}
+          >
+            Entrées
+          </button>
+          <button
+            onClick={() => setSelectedCategory(2)}
+            className={selectedCategory === 2 ? "active" : ""}
+          >
+            Plats
+          </button>
+          <button
+            onClick={() => setSelectedCategory(3)}
+            className={selectedCategory === 3 ? "active" : ""}
+          >
+            Desserts
+          </button>
+          <button
+            onClick={() => setSelectedCategory(4)}
+            className={selectedCategory === 4 ? "active" : ""}
+          >
+            Boissons
+          </button>
+          {/* Ajoutez d'autres boutons pour les catégories restantes */}
+        </div>
         <ul>
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <li key={item.id}>
               {item.title} - {item.price} €{" "}
               <button onClick={() => addToTableOrder(item)}>Ajouter</button>
             </li>
           ))}
         </ul>
+        <h3>Carte</h3>
+        <ul>
+          {filteredItems.map((item) => (
+            <li
+              key={item.id}
+              className={
+                cart.some((cartItem) => cartItem.id === item.id)
+                  ? "selected"
+                  : ""
+              }
+            >
+              <div className="item-info">
+                <span className="item-title">{item.title}</span>
+                <span className="item-price">{item.price}</span>
+              </div>
+              <button onClick={() => addToCart(item)}>Ajouter au panier</button>
+            </li>
+          ))}
+        </ul>
+        <ul>
+          {cart.map((cartItem) => (
+            <li key={cartItem.id}>
+              <div className="cart-item-info">
+                <span className="cart-item-title">{cartItem.title}</span>
+                <span className="cart-item-price">{cartItem.price}</span>
+                <span className="cart-item-quantity">
+                  Quantité : {cartItem.quantity}
+                </span>
+              </div>
+              <button onClick={() => removeFromCart(cartItem)}>Retirer</button>
+            </li>
+          ))}
+        </ul>
+        <button onClick={completeOrder}>Terminer Commande</button>
       </div>
     </div>
   );

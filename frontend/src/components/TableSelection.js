@@ -1,45 +1,57 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function TableSelection() {
-  const navigate = useNavigate();
   const [tableNumber, setTableNumber] = useState("");
-  const [numberOfPeople, setNumberOfPeople] = useState("");
+  const [totalCovers, setTotalCovers] = useState("");
+  const navigate = useNavigate();
 
-  const handleStartOrder = () => {
-    if (!tableNumber || !numberOfPeople) {
-      alert("Veuillez saisir le numéro de table et le nombre de personnes.");
-      return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Envoyez les données au serveur pour enregistrement dans la base de données
+      const response = await axios.post("http://localhost:5000/api/tables", {
+        tableNumber,
+        totalCovers,
+      });
+
+      console.log("Réponse du serveur:", response.data);
+
+      // Réinitialisez les champs après l'enregistrement
+      setTableNumber("");
+      setTotalCovers("");
+      navigate("/tableOrders");
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement:", error.response.data);
     }
-
-    // Vous pouvez effectuer des actions supplémentaires ici, comme enregistrer les informations dans le state global, etc.
-
-    // Rediriger vers le tableau de bord ou une autre page après la sélection de la table
-    navigate("/dashboard");
   };
 
   return (
-    <div className="table-selection-container">
+    <div>
       <h2>Sélection de la Table</h2>
-      <div>
-        <label>Numéro de Table:</label>
-        <input
-          type="number"
-          value={tableNumber}
-          onChange={(e) => setTableNumber(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Nombre de Personnes:</label>
-        <input
-          type="number"
-          value={numberOfPeople}
-          onChange={(e) => setNumberOfPeople(e.target.value)}
-          required
-        />
-      </div>
-      <button onClick={handleStartOrder}>Commencer la Commande</button>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Numéro de Table:</label>
+          <input
+            type="number"
+            value={tableNumber}
+            onChange={(e) => setTableNumber(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Nombre de Personnes:</label>
+          <input
+            type="number"
+            value={totalCovers}
+            onChange={(e) => setTotalCovers(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Enregistrer</button>
+      </form>
     </div>
   );
 }

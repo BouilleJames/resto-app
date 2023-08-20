@@ -1,145 +1,249 @@
-// derniere modif: 16/08/2021 par James
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2/promise");
-
+const sequelize = require("./config/db"); // Importez votre instance Sequelize
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// Configure your MySQL connection
-const connection = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "app_resto",
-});
+// Définissez vos modèles Sequelize ici
+const User = require("./models/User");
+const Table = require("./models/Table");
+const OrderItem = require("./models/OrderItem");
+const Order = require("./models/Order");
+const Item = require("./models/Item");
+const Client = require("./models/Client");
+const Category = require("./models/Category");
+// ... Importez d'autres modèles si nécessaire
 
 // Routes
-// TODO: Define your API routes here
-// Exemple de configuration pour renvoyer des données JSON
-app.get("/api/orders", (req, res) => {
-  const orders = [
-    // ... vos données de commandes au format JSON
-  ];
-  res.json(orders);
+// Exemple de configuration pour renvoyer des données Sequelize
+app.get("/api/items", async (req, res) => {
+  try {
+    const items = await Item.findAll();
+    res.json(items);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
 });
 
-app.get("/api/items", (req, res) => {
-  const items = [
-    {
-      id: 1,
-      category_id: 1,
-      title: "Buttermilk Pancakes",
-      description: "Je suis un pancake au caramel.",
-      price: 15.99,
-      image_url: "./images/item-1.jpeg",
-    },
-    {
-      id: 2,
-      category_id: 2,
-      title: "Diner Double",
-      description: "Burger,frites champignons et bacon.",
-      price: 13.99,
-      image_url: "./images/item-2.jpeg",
-    },
-    {
-      id: 3,
-      category_id: 4,
-      title: "Godzilla Milkshake",
-      description: "A la banane et à la fraise.",
-      price: 6.99,
-      image_url: "./images/item-5.jpeg",
-    },
-    {
-      id: 4,
-      category_id: 1,
-      title: "country delight",
-      description: "Un excellent Croc quand on a les crocs.",
-      price: 20.99,
-      image_url: "./images/item-4.jpeg",
-    },
-    {
-      id: 5,
-      category_id: 2,
-      title: "egg attack",
-      description: "Hamburger à l'oeuf pour les boxeurs.",
-      price: 22.99,
-      image_url: "./images/item-5.jpeg",
-    },
-    {
-      id: 6,
-      category_id: 4,
-      title: "oreo dream",
-      description: "Douceur au chocolat et à l'Oreo.",
-      price: 18.99,
-      image_url: "./images/item-6.jpeg",
-    },
-    {
-      id: 7,
-      category_id: 3,
-      title: "bacon overflow",
-      description: "Hamburger au bacon.",
-      price: 8.99,
-      image_url: "./images/item-7.jpeg",
-    },
-    {
-      id: 8,
-      category_id: 3,
-      title: "american classic",
-      description: "Hamburger classic, le goût des States.",
-      price: 18.99,
-      image_url: "./images/item-8.jpeg",
-    },
-    {
-      id: 9,
-      category_id: 4,
-      title: "quarantine buddy",
-      description: "Encas de Quarantaine, on est près.",
-      price: 16.99,
-      image_url: "./images/item-9.jpeg",
-    },
-  ];
-
-  res.json(items);
+app.get("/api/orders", async (req, res) => {
+  try {
+    const orders = await Order.findAll();
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
 });
 
 // Route pour obtenir la liste des catégories
-app.get("/api/categories", (req, res) => {
-  const categories = [
-    {
-      id: 1,
-      title: "Breakfast",
-    },
-    {
-      id: 2,
-      title: "Lunch",
-    },
-    {
-      id: 3,
-      title: "Shakes",
-    },
-    {
-      id: 4,
-      title: "Dinner",
-    },
-  ];
-
-  res.json(categories);
+app.get("/api/categories", async (req, res) => {
+  try {
+    const categories = await Category.findAll();
+    res.json(categories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
 });
 
-// Route pour obtenir la liste des articles
-app.get("/api/items", (req, res) => {
-  res.json(items);
+app.get("/api/tables", async (req, res) => {
+  try {
+    const tables = await Table.findAll();
+    res.json(tables);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+app.post("/api/tables", async (req, res) => {
+  try {
+    const { tableNumber, totalCovers } = req.body;
+
+    if (!tableNumber || !totalCovers) {
+      return res
+        .status(400)
+        .json({ error: "Numéro de table et capacité requis" });
+    }
+
+    const newTable = await Table.create({
+      tableNumber,
+      totalCovers,
+    });
+
+    res.status(201).json(newTable);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
 });
 
 // Autres routes et configurations...
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Synchronisez les modèles Sequelize avec la base de données
+sequelize
+  .sync()
+  .then(() => {
+    console.log("Modèles de la base de données synchronisés");
+
+    // Lancez le serveur une fois que les modèles sont synchronisés
+    app.listen(PORT, () => {
+      console.log(`Le serveur fonctionne sur le port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error(
+      "Erreur lors de la synchronisation des modèles de la base de données :",
+      error
+    );
+  });
+
+// // derniere modif: 16/08/2021 par James
+// const express = require("express");
+// const cors = require("cors");
+// const mysql = require("mysql2/promise");
+
+// const app = express();
+// const PORT = process.env.PORT || 5000;
+
+// app.use(cors());
+// app.use(express.json());
+
+// // Configure your MySQL connection
+// const connection = mysql.createPool({
+//   host: "localhost",
+//   user: "root",
+//   password: "root",
+//   database: "app_resto",
+// });
+
+// // Routes
+// // TODO: Define your API routes here
+// // Exemple de configuration pour renvoyer des données JSON
+// app.get("/api/orders", (req, res) => {
+//   const orders = [
+//     // ... vos données de commandes au format JSON
+//   ];
+//   res.json(orders);
+// });
+
+// app.get("/api/items", (req, res) => {
+//   const items = [
+//     {
+//       id: 1,
+//       category_id: 1,
+//       title: "Buttermilk Pancakes",
+//       description: "Je suis un pancake au caramel.",
+//       price: 15.99,
+//       image_url: "./images/item-1.jpeg",
+//     },
+//     {
+//       id: 2,
+//       category_id: 2,
+//       title: "Diner Double",
+//       description: "Burger,frites champignons et bacon.",
+//       price: 13.99,
+//       image_url: "./images/item-2.jpeg",
+//     },
+//     {
+//       id: 3,
+//       category_id: 4,
+//       title: "Godzilla Milkshake",
+//       description: "A la banane et à la fraise.",
+//       price: 6.99,
+//       image_url: "./images/item-5.jpeg",
+//     },
+//     {
+//       id: 4,
+//       category_id: 1,
+//       title: "country delight",
+//       description: "Un excellent Croc quand on a les crocs.",
+//       price: 20.99,
+//       image_url: "./images/item-4.jpeg",
+//     },
+//     {
+//       id: 5,
+//       category_id: 2,
+//       title: "egg attack",
+//       description: "Hamburger à l'oeuf pour les boxeurs.",
+//       price: 22.99,
+//       image_url: "./images/item-5.jpeg",
+//     },
+//     {
+//       id: 6,
+//       category_id: 4,
+//       title: "oreo dream",
+//       description: "Douceur au chocolat et à l'Oreo.",
+//       price: 18.99,
+//       image_url: "./images/item-6.jpeg",
+//     },
+//     {
+//       id: 7,
+//       category_id: 3,
+//       title: "bacon overflow",
+//       description: "Hamburger au bacon.",
+//       price: 8.99,
+//       image_url: "./images/item-7.jpeg",
+//     },
+//     {
+//       id: 8,
+//       category_id: 3,
+//       title: "american classic",
+//       description: "Hamburger classic, le goût des States.",
+//       price: 18.99,
+//       image_url: "./images/item-8.jpeg",
+//     },
+//     {
+//       id: 9,
+//       category_id: 4,
+//       title: "quarantine buddy",
+//       description: "Encas de Quarantaine, on est près.",
+//       price: 16.99,
+//       image_url: "./images/item-9.jpeg",
+//     },
+//   ];
+
+//   res.json(items);
+// });
+
+// // Route pour obtenir la liste des catégories
+// app.get("/api/categories", (req, res) => {
+//   const categories = [
+//     {
+//       id: 1,
+//       title: "Breakfast",
+//     },
+//     {
+//       id: 2,
+//       title: "Lunch",
+//     },
+//     {
+//       id: 3,
+//       title: "Shakes",
+//     },
+//     {
+//       id: 4,
+//       title: "Dinner",
+//     },
+//   ];
+
+//   res.json(categories);
+// });
+
+// // Route pour obtenir la liste des articles
+// app.get("/api/items", (req, res) => {
+//   res.json(items);
+// });
+
+// // Autres routes et configurations...
+
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
 
 // const express = require("express");
 // const app = require("./app");

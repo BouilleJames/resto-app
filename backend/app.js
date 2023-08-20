@@ -40,13 +40,14 @@
 // module.exports = app;
 
 const express = require("express");
+const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
+
 const authRoutes = require("./routes/auth");
 const itemsRoutes = require("./routes/items");
 const tablesRoutes = require("./routes/tables");
-
-const app = express();
+const ordersRoutes = require("./routes/orders");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -54,6 +55,7 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemsRoutes);
 app.use("/api/tables", tablesRoutes);
+app.use("/api/orders", ordersRoutes);
 
 // Gestionnaire d'erreur global
 app.use((error, req, res, next) => {
@@ -61,7 +63,4 @@ app.use((error, req, res, next) => {
   res.status(500).json({ message: "Une erreur est survenue sur le serveur." });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Le serveur écoute sur le port ${PORT}`);
-});
+module.exports = app;

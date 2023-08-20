@@ -11,12 +11,16 @@ const Client = sequelize.define("clients", {
   table_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    references: {
+      model: "tables",
+      key: "id",
+    },
   },
   user_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  covers: {
+  totalCovers: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },

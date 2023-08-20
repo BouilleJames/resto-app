@@ -7,18 +7,20 @@ import Dashboard from "./components/Dashboard";
 import "./App.css";
 import TableSelection from "./components/TableSelection";
 import TableOrders from "./components/TableOrders";
+import Navigation from "./components/Navigation";
 
 function App() {
   // Votre code de composant App ici
   return (
     <div className="App">
+      <Navigation />
       <Routes>
         <Route path="/" element={<TableSelection />} />
-        <Route path="/registerForm" element={<RegisterForm />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/api/auth/signup" element={<RegisterForm />} />
+        <Route path="/api/auth/login" element={<Login />} />
         <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/tableOrder" element={<TableOrders />} />
+        <Route path="/tableOrders" element={<TableOrders />} />
       </Routes>
     </div>
   );

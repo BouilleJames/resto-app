@@ -1,10 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const tablesController = require("../controllers/tablesController");
+const Table = require("../models/Table");
 
-// Endpoint pour récupérer les commandes par table
-router.get("/:tableId/orders", tablesController.getOrdersByTable);
+router.post("/api/tables", async (req, res) => {
+  try {
+    const { tableNumber, totalCovers } = req.body;
 
-// Autres routes pour créer, mettre à jour et supprimer des tables...
+    // Create a new table entry in the database
+    const newTable = await Table.create({
+      tableNumber: tableNumber,
+      totalCovers: totalCovers,
+    });
+
+    res.status(201).json(newTable);
+  } catch (error) {
+    console.error("Error creating table:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 module.exports = router;
