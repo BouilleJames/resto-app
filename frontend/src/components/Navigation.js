@@ -12,6 +12,9 @@ function Navigation() {
         <li>
           <Link to="/dashboard">Dashboard</Link>
         </li>
+        <li>
+          <Link to="/tableOrders">Articles commandés</Link>
+        </li>
       </ul>
     </nav>
   );

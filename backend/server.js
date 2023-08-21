@@ -39,6 +39,26 @@ app.get("/api/orders", async (req, res) => {
   }
 });
 
+app.post("/api/orders", async (req, res) => {
+  try {
+    const { items } = req.body;
+
+    if (!items || items.length === 0) {
+      return res.status(400).json({ error: "La commande est vide" });
+    }
+
+    // Créer une nouvelle commande avec les articles
+    const newOrder = await Order.create({
+      items: JSON.stringify(items), // Convertir les articles en JSON
+    });
+
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
 // Route pour obtenir la liste des catégories
 app.get("/api/categories", async (req, res) => {
   try {

@@ -58,7 +58,7 @@ function Dashboard() {
       (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
     );
 
-    // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
+    // Envoyer le ticket à la cuisine (vous pouvez utiliser une API, WebSocket, etc.)
     // Afficher les articles du ticket pour la cuisine
     console.log("Articles pour la cuisine :", kitchenItems);
 
@@ -69,11 +69,47 @@ function Dashboard() {
     setCart(updatedCart);
   };
 
+  // const generateKitchenTicket = async () => {
+  //   console.log("Kitchen Ticket Generated:");
+
+  //   // Filtrer les articles du panier par catégories 1 à 3
+  //   const kitchenItems = cart.filter(
+  //     (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
+  //   );
+
+  //   // Créer une nouvelle commande dans la base de données
+  //   try {
+  //     const newOrder = await Order.create({
+  //       user_id: 1, // Remplacez par l'ID de l'utilisateur en cours
+  //       table_id: 1, // Remplacez par l'ID de la table appropriée
+  //       status: "en_cours",
+  //     });
+
+  //     // Ajouter les articles associés à la commande dans la table OrderItem
+  //     for (const kitchenItem of kitchenItems) {
+  //       await OrderItem.create({
+  //         order_id: newOrder.id,
+  //         item_id: kitchenItem.id,
+  //         quantity: kitchenItem.quantity,
+  //         status: "en_cours",
+  //       });
+  //     }
+
+  //     console.log("Commande enregistrée avec succès:", newOrder);
+  //   } catch (error) {
+  //     console.error("Erreur lors de l'enregistrement de la commande:", error);
+  //   }
+
+  //   // Mettre à jour le panier en supprimant les articles des catégories 1 à 3
+  //   const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
+  //   setCart(updatedCart);
+  // };
+
   const generateBarTicket = () => {
     console.log("Bar Ticket Generated:");
 
     // Filtrer les articles du panier par catégories 1 à 3
-    const barItems = cart.filter((cartItem) => cartItem.category_id == 4);
+    const barItems = cart.filter((cartItem) => cartItem.category_id === 4);
 
     // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
     // Afficher les articles du ticket pour la cuisine
@@ -125,7 +161,7 @@ function Dashboard() {
       <div className="menu-section">
         <h3>Articles disponibles :</h3>
         <ul>
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <li
               key={item.id}
               className={

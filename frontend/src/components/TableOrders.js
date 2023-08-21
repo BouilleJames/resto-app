@@ -173,7 +173,7 @@ function TableOrders({ tableNumber }) {
         <ul>
           {filteredItems.map((item) => (
             <li key={item.id}>
-              {item.title} - {item.price} €{" "}
+              {item.title} - {item.price}- {item.quantity} €{" "}
               <button onClick={() => addToTableOrder(item)}>Ajouter</button>
             </li>
           ))}

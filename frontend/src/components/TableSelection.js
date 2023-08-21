@@ -22,7 +22,7 @@ function TableSelection() {
       // Réinitialisez les champs après l'enregistrement
       setTableNumber("");
       setTotalCovers("");
-      navigate("/tableOrders");
+      navigate("/dashbord");
     } catch (error) {
       console.error("Erreur lors de l'enregistrement:", error.response.data);
     }
