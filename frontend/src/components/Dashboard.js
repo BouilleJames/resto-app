@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Categories from "./Categories";
 import "./Dashboard.css";
 
 function Dashboard() {
   const [items, setItems] = useState([]); // État pour stocker la liste des articles
   const [cart, setCart] = useState([]); // État pour stocker le panier
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     // Appel à l'API pour récupérer les données d'articles
@@ -19,6 +21,10 @@ function Dashboard() {
       console.error("Erreur lors de la récupération des articles:", error);
     }
   };
+
+  const filteredItems = selectedCategory
+    ? items.filter((item) => item.category_id === selectedCategory)
+    : items;
 
   const addToCart = (item) => {
     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
@@ -45,21 +51,77 @@ function Dashboard() {
   };
 
   const generateKitchenTicket = () => {
-    console.log("Kitchen Ticket Generated:", cart);
-    setCart([]);
+    console.log("Kitchen Ticket Generated:");
+
+    // Filtrer les articles du panier par catégories 1 à 3
+    const kitchenItems = cart.filter(
+      (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
+    );
+
+    // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
+    // Afficher les articles du ticket pour la cuisine
+    console.log("Articles pour la cuisine :", kitchenItems);
+
+    // Supprimer les articles du panier des catégories 1 à 3
+    const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
+
+    // Mettre à jour le panier avec les articles restants
+    setCart(updatedCart);
   };
 
   const generateBarTicket = () => {
-    console.log("Bar Ticket Generated:", cart);
-    // Ajouter le contenu de "cart" dans un ticket pour le bar
-    const barTicket = [...cart]; // Créer une copie de cart
+    console.log("Bar Ticket Generated:");
+
+    // Filtrer les articles du panier par catégories 1 à 3
+    const barItems = cart.filter((cartItem) => cartItem.category_id == 4);
+
     // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
-    console.log("Ticket envoyé au bar:", barTicket);
+    // Afficher les articles du ticket pour la cuisine
+    console.log("Articles pour le bar :", barItems);
+
+    // Supprimer les articles du panier de la catégorie 4
+    const updatedCart = cart.filter((cartItem) => cartItem.category_id < 4);
+
+    // Mettre à jour le panier avec les articles restants
+    setCart(updatedCart);
   };
 
   return (
     <div className="dashboard-container">
       <h2>Tableau de bord</h2>
+      <div className="category-filter">
+        <button
+          onClick={() => setSelectedCategory(null)}
+          className={selectedCategory === null ? "active" : ""}
+        >
+          Tous
+        </button>
+        <button
+          onClick={() => setSelectedCategory(1)}
+          className={selectedCategory === 1 ? "active" : ""}
+        >
+          Entrées
+        </button>
+        <button
+          onClick={() => setSelectedCategory(2)}
+          className={selectedCategory === 2 ? "active" : ""}
+        >
+          Plats
+        </button>
+        <button
+          onClick={() => setSelectedCategory(3)}
+          className={selectedCategory === 3 ? "active" : ""}
+        >
+          Desserts
+        </button>
+        <button
+          onClick={() => setSelectedCategory(4)}
+          className={selectedCategory === 4 ? "active" : ""}
+        >
+          Boissons
+        </button>
+        {/* Ajoutez d'autres boutons pour les catégories restantes */}
+      </div>
       <div className="menu-section">
         <h3>Articles disponibles :</h3>
         <ul>
@@ -93,12 +155,21 @@ function Dashboard() {
                   Quantité : {cartItem.quantity}
                 </span>
               </div>
-              <button onClick={() => removeFromCart(cartItem)}>Retirer</button>
+              <button
+                className="remove-button"
+                onClick={() => removeFromCart(cartItem)}
+              >
+                Retirer
+              </button>
             </li>
           ))}
         </ul>
-        <button onClick={generateKitchenTicket}>Générer Ticket Cuisine</button>
-        <button onClick={generateBarTicket}>Générer Ticket Bar</button>
+        <button className="generate-button" onClick={generateKitchenTicket}>
+          Générer Ticket Cuisine
+        </button>
+        <button className="generate-button" onClick={generateBarTicket}>
+          Générer Ticket Bar
+        </button>
       </div>
     </div>
   );
@@ -175,11 +246,11 @@ export default Dashboard;
 //       {selectedTable && selectedPeople && (
 //         <div>
 //           <h2>Menu</h2>
-//           <Categories
-//             categories={Categories} // Replace with your actual category data
-//             activeCategory={selectedCategory}
-//             filterItems={handleCategoryFilter}
-//           />
+// <Categories
+//   categories={Categories} // Replace with your actual category data
+//   activeCategory={selectedCategory}
+//   filterItems={handleCategoryFilter}
+// />
 //           <div className="category-filter">
 //             <button
 //               onClick={() => handleCategoryFilter(null)}
