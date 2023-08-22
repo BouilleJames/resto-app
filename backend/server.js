@@ -15,6 +15,8 @@ const Order = require("./models/Order");
 const Item = require("./models/Item");
 const Client = require("./models/Client");
 const Category = require("./models/Category");
+const KitchenItem = require("./models/KitchenItem");
+const BarItem = require("./models/BarItem");
 // ... Importez d'autres modèles si nécessaire
 
 // Routes
@@ -98,6 +100,163 @@ app.post("/api/tables", async (req, res) => {
     res.status(201).json(newTable);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+// Route pour obtenir les articles en cuisine
+app.get("/api/kitchen_items", async (req, res) => {
+  try {
+    const kitchenItems = await KitchenItem.findAll();
+    res.json(kitchenItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+// Route pour obtenir les articles au bar
+app.get("/api/bar_items", async (req, res) => {
+  try {
+    const barItems = await BarItem.findAll();
+    res.json(barItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+// Route pour mettre à jour le statut d'un article en cuisine
+app.put("/api/kitchen_items/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const kitchenItem = await KitchenItem.findByPk(id);
+
+    if (!kitchenItem) {
+      return res.status(404).json({ error: "Article introuvable" });
+    }
+
+    await kitchenItem.update({ status });
+
+    res
+      .status(200)
+      .json({ message: "Statut de l'article mis à jour avec succès" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+// Route pour mettre à jour le statut d'un article au bar
+app.put("/api/bar_items/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const barItem = await BarItem.findByPk(id);
+
+    if (!barItem) {
+      return res.status(404).json({ error: "Article introuvable" });
+    }
+
+    await barItem.update({ status });
+
+    res
+      .status(200)
+      .json({ message: "Statut de l'article mis à jour avec succès" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+app.post("/api/kitchen-orders/:tableId", async (req, res) => {
+  try {
+    const { items } = req.body;
+    const { tableId } = req.params;
+
+    // Créer une nouvelle commande en cuisine pour la table donnée
+    const newKitchenOrder = await Order.create({
+      table_id: tableId,
+      status: "en_cours", // Ou utilisez le statut approprié
+    });
+
+    for (const item of items) {
+      await KitchenItem.create({
+        order_id: newKitchenOrder.id,
+        order_item_id: item.id,
+        quantity: item.quantity,
+      });
+    }
+
+    res.status(201).json(newKitchenOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+app.post("/api/bar-orders/:tableId", async (req, res) => {
+  try {
+    const { items } = req.body;
+    const { tableId } = req.params;
+
+    // Créer une nouvelle commande au bar pour la table donnée
+    const newBarOrder = await Order.create({
+      table_id: tableId,
+      status: "en_cours", // Ou utilisez le statut approprié
+    });
+
+    for (const item of items) {
+      await BarItem.create({
+        order_id: newBarOrder.id,
+        order_item_id: item.id,
+      });
+    }
+
+    res.status(201).json(newBarOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+app.get("/api/tables/:tableNumber/orders", async (req, res) => {
+  try {
+    const { tableNumber } = req.params;
+
+    // Requête à la base de données pour récupérer les articles commandés par la table spécifique
+    const tableOrders = await Order.findAll({
+      where: { table_id: tableNumber },
+      include: [
+        {
+          model: OrderItem,
+          include: Item, // Assurez-vous que les associations sont correctement définies
+        },
+      ],
+    });
+
+    const formattedTableOrders = tableOrders.map((order) => {
+      return {
+        tableNumber: order.table_id,
+        items: order.order_items.map((orderItem) => {
+          return {
+            itemTitle: orderItem.item.title,
+            quantity: orderItem.quantity,
+            // Ajoutez d'autres informations si nécessaire
+          };
+        }),
+      };
+    });
+
+    res.json(formattedTableOrders);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des commandes de la table:",
+      error
+    );
     res.status(500).json({ error: "Erreur interne du serveur" });
   }
 });

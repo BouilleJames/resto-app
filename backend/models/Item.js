@@ -108,6 +108,41 @@ Item.sync().then(() => {
       price: 3.99,
       image_url: "./images/item-9.jpeg",
     },
+    {
+      category_id: 4,
+      title: "SodaOrange",
+      description: "Sucré et Gazeux à souhait.",
+      price: 3.99,
+      image_url: "./images/item-9.jpeg",
+    },
+    {
+      category_id: 4,
+      title: "SodaFraise",
+      description: "Sucré et Gazeux à souhait.",
+      price: 3.99,
+      image_url: "./images/item-9.jpeg",
+    },
+    {
+      category_id: 4,
+      title: "KF",
+      description: "Italien et délicieux.",
+      price: 1.49,
+      image_url: "./images/item-9.jpeg",
+    },
+    {
+      category_id: 4,
+      title: "Eau Minérale plate 1L",
+      description: "Italien et délicieux.",
+      price: 4.49,
+      image_url: "./images/item-9.jpeg",
+    },
+    {
+      category_id: 4,
+      title: "Eau Minérale gazeuse 1L",
+      description: "Italien et délicieux.",
+      price: 4.49,
+      image_url: "./images/item-9.jpeg",
+    },
     // ... Ajoutez les autres éléments de la liste ici
   ])
     .then(() => {

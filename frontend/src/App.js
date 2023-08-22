@@ -17,6 +17,7 @@ function App() {
       <Navigation />
       <Routes>
         <Route path="/" element={<TableSelection />} />
+        <Route path="/tableSelection" element={<TableSelection />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/orderManagement" element={<OrderManagement />} />
         <Route path="/api/auth/signup" element={<RegisterForm />} />

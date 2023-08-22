@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Categories from "./Categories";
+// import Categories from "./Categories";
+import TableOrders from "./TableOrders";
 import "./Dashboard.css";
 
 function Dashboard() {
   const [items, setItems] = useState([]); // État pour stocker la liste des articles
   const [cart, setCart] = useState([]); // État pour stocker le panier
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [tableOrders, setTableOrders] = useState({});
+  const [selectedTable] = useState(""); // État pour stocker les commandes par table
 
   useEffect(() => {
     // Appel à l'API pour récupérer les données d'articles
@@ -58,67 +61,69 @@ function Dashboard() {
       (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
     );
 
-    // Envoyer le ticket à la cuisine (vous pouvez utiliser une API, WebSocket, etc.)
-    // Afficher les articles du ticket pour la cuisine
-    console.log("Articles pour la cuisine :", kitchenItems);
+    // Mettez à jour l'état tableOrders avec les articles commandés
+    setTableOrders((prevTableOrders) => ({
+      ...prevTableOrders,
+      [selectedTable]: kitchenItems.map((cartItem) => ({
+        id: cartItem.id, // Ajoutez l'ID de l'article
+        quantity: cartItem.quantity,
+      })),
+    }));
 
-    // Supprimer les articles du panier des catégories 1 à 3
+    // Appelez l'API pour enregistrer la commande en cuisine dans la base de données
+    axios
+      .post(`http://localhost:5000/api/kitchen-orders/${selectedTable}`, {
+        items: kitchenItems.map((cartItem) => ({
+          id: cartItem.id, // Ajoutez l'ID de l'article
+          quantity: cartItem.quantity,
+        })),
+      })
+      .then((response) => {
+        console.log("Commande enregistrée en cuisine:", response.data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'enregistrement de la commande:", error);
+      });
+
+    // Supprimez les articles du panier des catégories 1 à 3
     const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
 
-    // Mettre à jour le panier avec les articles restants
+    // Mettez à jour le panier avec les articles restants
     setCart(updatedCart);
   };
-
-  // const generateKitchenTicket = async () => {
-  //   console.log("Kitchen Ticket Generated:");
-
-  //   // Filtrer les articles du panier par catégories 1 à 3
-  //   const kitchenItems = cart.filter(
-  //     (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
-  //   );
-
-  //   // Créer une nouvelle commande dans la base de données
-  //   try {
-  //     const newOrder = await Order.create({
-  //       user_id: 1, // Remplacez par l'ID de l'utilisateur en cours
-  //       table_id: 1, // Remplacez par l'ID de la table appropriée
-  //       status: "en_cours",
-  //     });
-
-  //     // Ajouter les articles associés à la commande dans la table OrderItem
-  //     for (const kitchenItem of kitchenItems) {
-  //       await OrderItem.create({
-  //         order_id: newOrder.id,
-  //         item_id: kitchenItem.id,
-  //         quantity: kitchenItem.quantity,
-  //         status: "en_cours",
-  //       });
-  //     }
-
-  //     console.log("Commande enregistrée avec succès:", newOrder);
-  //   } catch (error) {
-  //     console.error("Erreur lors de l'enregistrement de la commande:", error);
-  //   }
-
-  //   // Mettre à jour le panier en supprimant les articles des catégories 1 à 3
-  //   const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
-  //   setCart(updatedCart);
-  // };
 
   const generateBarTicket = () => {
     console.log("Bar Ticket Generated:");
 
-    // Filtrer les articles du panier par catégories 1 à 3
+    // Filtrer les articles du panier par catégories 4 (boissons)
     const barItems = cart.filter((cartItem) => cartItem.category_id === 4);
 
-    // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
-    // Afficher les articles du ticket pour la cuisine
-    console.log("Articles pour le bar :", barItems);
+    // Mettez à jour l'état tableOrders avec les articles commandés
+    setTableOrders((prevTableOrders) => ({
+      ...prevTableOrders,
+      [selectedTable]: barItems.map((cartItem) => ({
+        itemTitle: cartItem.title,
+        quantity: cartItem.quantity,
+      })),
+    }));
 
-    // Supprimer les articles du panier de la catégorie 4
+    // Appelez l'API pour enregistrer la commande au bar dans la base de données
+    axios
+      .post("http://localhost:5000/api/orders", {
+        items: barItems,
+        tableNumber: selectedTable,
+      })
+      .then((response) => {
+        console.log("Commande enregistrée au bar:", response.data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'enregistrement de la commande:", error);
+      });
+
+    // Supprimez les articles du panier de la catégorie 4
     const updatedCart = cart.filter((cartItem) => cartItem.category_id < 4);
 
-    // Mettre à jour le panier avec les articles restants
+    // Mettez à jour le panier avec les articles restants
     setCart(updatedCart);
   };
 
@@ -207,11 +212,230 @@ function Dashboard() {
           Générer Ticket Bar
         </button>
       </div>
+      <TableOrders tableOrders={tableOrders} />{" "}
+      {/* Composant pour afficher les commandes par table */}
     </div>
   );
 }
 
 export default Dashboard;
+
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import Categories from "./Categories";
+// import "./Dashboard.css";
+// import TableOrders from "./TableOrders";
+
+// function Dashboard() {
+//   const [items, setItems] = useState([]); // État pour stocker la liste des articles
+//   const [cart, setCart] = useState([]); // État pour stocker le panier
+//   const [selectedCategory, setSelectedCategory] = useState(null);
+
+//   useEffect(() => {
+//     // Appel à l'API pour récupérer les données d'articles
+//     fetchItems();
+//   }, []);
+
+//   const fetchItems = async () => {
+//     try {
+//       const response = await axios.get("http://localhost:5000/api/items");
+//       setItems(response.data);
+//     } catch (error) {
+//       console.error("Erreur lors de la récupération des articles:", error);
+//     }
+//   };
+
+//   const filteredItems = selectedCategory
+//     ? items.filter((item) => item.category_id === selectedCategory)
+//     : items;
+
+//   const addToCart = (item) => {
+//     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+//     if (existingItem) {
+//       setCart((prevCart) =>
+//         prevCart.map((cartItem) =>
+//           cartItem.id === item.id
+//             ? { ...cartItem, quantity: cartItem.quantity + 1 }
+//             : cartItem
+//         )
+//       );
+//     } else {
+//       setCart((prevCart) => [...prevCart, { ...item, quantity: 1 }]);
+//     }
+//   };
+
+//   const removeFromCart = (item) => {
+//     const updatedCart = cart.map((cartItem) =>
+//       cartItem.id === item.id
+//         ? { ...cartItem, quantity: cartItem.quantity - 1 }
+//         : cartItem
+//     );
+//     setCart(updatedCart.filter((cartItem) => cartItem.quantity > 0));
+//   };
+
+//   const generateKitchenTicket = () => {
+//     console.log("Kitchen Ticket Generated:");
+
+//     // Filtrer les articles du panier par catégories 1 à 3
+//     const kitchenItems = cart.filter(
+//       (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
+//     );
+
+//     // Envoyer le ticket à la cuisine (vous pouvez utiliser une API, WebSocket, etc.)
+//     // Afficher les articles du ticket pour la cuisine
+//     console.log("Articles pour la cuisine :", kitchenItems);
+
+//     // Supprimer les articles du panier des catégories 1 à 3
+//     const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
+
+//     // Mettre à jour le panier avec les articles restants
+//     setCart(updatedCart);
+//   };
+
+//   // const generateKitchenTicket = async () => {
+//   //   console.log("Kitchen Ticket Generated:");
+
+//   //   // Filtrer les articles du panier par catégories 1 à 3
+//   //   const kitchenItems = cart.filter(
+//   //     (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
+//   //   );
+
+//   //   // Créer une nouvelle commande dans la base de données
+//   //   try {
+//   //     const newOrder = await Order.create({
+//   //       user_id: 1, // Remplacez par l'ID de l'utilisateur en cours
+//   //       table_id: 1, // Remplacez par l'ID de la table appropriée
+//   //       status: "en_cours",
+//   //     });
+
+//   //     // Ajouter les articles associés à la commande dans la table OrderItem
+//   //     for (const kitchenItem of kitchenItems) {
+//   //       await OrderItem.create({
+//   //         order_id: newOrder.id,
+//   //         item_id: kitchenItem.id,
+//   //         quantity: kitchenItem.quantity,
+//   //         status: "en_cours",
+//   //       });
+//   //     }
+
+//   //     console.log("Commande enregistrée avec succès:", newOrder);
+//   //   } catch (error) {
+//   //     console.error("Erreur lors de l'enregistrement de la commande:", error);
+//   //   }
+
+//   //   // Mettre à jour le panier en supprimant les articles des catégories 1 à 3
+//   //   const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
+//   //   setCart(updatedCart);
+//   // };
+
+//   const generateBarTicket = () => {
+//     console.log("Bar Ticket Generated:");
+
+//     // Filtrer les articles du panier par catégories 1 à 3
+//     const barItems = cart.filter((cartItem) => cartItem.category_id === 4);
+
+//     // Envoyer le ticket au bar (vous pouvez utiliser une API, WebSocket, etc.)
+//     // Afficher les articles du ticket pour la cuisine
+//     console.log("Articles pour le bar :", barItems);
+
+//     // Supprimer les articles du panier de la catégorie 4
+//     const updatedCart = cart.filter((cartItem) => cartItem.category_id < 4);
+
+//     // Mettre à jour le panier avec les articles restants
+//     setCart(updatedCart);
+//   };
+
+//   return (
+//     <div className="dashboard-container">
+//       <h2>Tableau de bord</h2>
+//       <div className="category-filter">
+//         <button
+//           onClick={() => setSelectedCategory(null)}
+//           className={selectedCategory === null ? "active" : ""}
+//         >
+//           Tous
+//         </button>
+//         <button
+//           onClick={() => setSelectedCategory(1)}
+//           className={selectedCategory === 1 ? "active" : ""}
+//         >
+//           Entrées
+//         </button>
+//         <button
+//           onClick={() => setSelectedCategory(2)}
+//           className={selectedCategory === 2 ? "active" : ""}
+//         >
+//           Plats
+//         </button>
+//         <button
+//           onClick={() => setSelectedCategory(3)}
+//           className={selectedCategory === 3 ? "active" : ""}
+//         >
+//           Desserts
+//         </button>
+//         <button
+//           onClick={() => setSelectedCategory(4)}
+//           className={selectedCategory === 4 ? "active" : ""}
+//         >
+//           Boissons
+//         </button>
+//         {/* Ajoutez d'autres boutons pour les catégories restantes */}
+//       </div>
+//       <div className="menu-section">
+//         <h3>Articles disponibles :</h3>
+//         <ul>
+//           {filteredItems.map((item) => (
+//             <li
+//               key={item.id}
+//               className={
+//                 cart.some((cartItem) => cartItem.id === item.id)
+//                   ? "selected"
+//                   : ""
+//               }
+//             >
+//               <div className="item-info">
+//                 <span className="item-title">{item.title}</span>
+//                 <span className="item-price">{item.price}</span>
+//               </div>
+//               <button onClick={() => addToCart(item)}>Ajouter au panier</button>
+//             </li>
+//           ))}
+//         </ul>
+//       </div>
+//       <div className="cart-section">
+//         <h3>Panier :</h3>
+//         <ul>
+//           {cart.map((cartItem) => (
+//             <li key={cartItem.id}>
+//               <div className="cart-item-info">
+//                 <span className="cart-item-title">{cartItem.title}</span>
+//                 <span className="cart-item-price">{cartItem.price}</span>
+//                 <span className="cart-item-quantity">
+//                   Quantité : {cartItem.quantity}
+//                 </span>
+//               </div>
+//               <button
+//                 className="remove-button"
+//                 onClick={() => removeFromCart(cartItem)}
+//               >
+//                 Retirer
+//               </button>
+//             </li>
+//           ))}
+//         </ul>
+//         <button className="generate-button" onClick={generateKitchenTicket}>
+//           Générer Ticket Cuisine
+//         </button>
+//         <button className="generate-button" onClick={generateBarTicket}>
+//           Générer Ticket Bar
+//         </button>
+//       </div>
+//       <TableOrders tableOrders={tableOrders} />
+//     </div>
+//   );
+// }
+
+// export default Dashboard;
 
 // ***********************************************************************
 // import React, { useState, useEffect } from "react";

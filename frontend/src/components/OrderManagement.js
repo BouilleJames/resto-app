@@ -4,81 +4,127 @@ import { FaUtensils, FaCocktail } from "react-icons/fa";
 import "./OrderManagement.css";
 
 function OrderManagement() {
-  const [tables, setTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
-  const [kitchenOrders, setKitchenOrders] = useState([]);
-  const [barOrders, setBarOrders] = useState([]);
+  const [kitchenItems, setKitchenItems] = useState([]);
+  const [barItems, setBarItems] = useState([]);
 
   useEffect(() => {
-    fetchTables();
-    fetchOrders();
+    fetchKitchenItems();
+    fetchBarItems();
   }, []);
 
-  const fetchTables = async () => {
+  const fetchKitchenItems = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/tables");
-      setTables(response.data);
+      const response = await axios.get(
+        "http://localhost:5000/api/kitchen_items"
+      );
+      setKitchenItems(response.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des tables:", error);
+      console.error(
+        "Erreur lors de la récupération des articles de cuisine:",
+        error
+      );
     }
   };
 
-  const fetchOrders = async () => {
+  const fetchBarItems = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/orders");
-      const kitchenOrders = response.data.filter(
-        (order) =>
-          order.status === "en_cours" &&
-          order.category_id >= 1 &&
-          order.category_id <= 3
-      );
-      const barOrders = response.data.filter(
-        (order) => order.status === "en_cours" && order.category_id === 4
-      );
-      setKitchenOrders(kitchenOrders);
-      setBarOrders(barOrders);
+      const response = await axios.get("http://localhost:5000/api/bar_items");
+      setBarItems(response.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des commandes:", error);
+      console.error(
+        "Erreur lors de la récupération des articles de bar:",
+        error
+      );
     }
   };
 
-  const handleTableClick = (tableId) => {
-    setSelectedTable(tableId);
+  const handleKitchenItemPrepared = async (item) => {
+    try {
+      // Marquer l'article comme préparé dans la base de données
+      await axios.put(`http://localhost:5000/api/kitchen_items/${item.id}`, {
+        status: "prete",
+      });
+
+      // Mettre à jour la liste des articles de cuisine
+      const updatedKitchenItems = kitchenItems.map((kitchenItem) =>
+        kitchenItem.id === item.id
+          ? { ...kitchenItem, status: "prete" }
+          : kitchenItem
+      );
+      setKitchenItems(updatedKitchenItems);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la mise à jour de l'article de cuisine:",
+        error
+      );
+    }
+  };
+
+  const handleBarItemPrepared = async (item) => {
+    try {
+      // Marquer l'article comme préparé dans la base de données
+      await axios.put(`http://localhost:5000/api/bar_items/${item.id}`, {
+        status: "prete",
+      });
+
+      // Mettre à jour la liste des articles de bar
+      const updatedBarItems = barItems.map((barItem) =>
+        barItem.id === item.id ? { ...barItem, status: "prete" } : barItem
+      );
+      setBarItems(updatedBarItems);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la mise à jour de l'article de bar:",
+        error
+      );
+    }
   };
 
   return (
     <div className="order-management-container">
       <h2>Gestion des Commandes</h2>
-      <div className="table-list">
-        {tables.map((table) => (
-          <div
-            key={table.id}
-            className={`table-icon ${
-              selectedTable === table.id ? "selected" : ""
-            }`}
-            onClick={() => handleTableClick(table.id)}
-          >
-            {table.tableNumber}
-          </div>
-        ))}
+      <div className="table-selection">
+        <p>Choisissez une table :</p>
+        <div className="table-icons">{/* Icônes de table */}</div>
       </div>
-      <div className="orders-section">
-        <div className="kitchen-orders">
-          <h3>Commandes en préparation (Cuisine) :</h3>
+      <div className="order-items">
+        <div className="kitchen-items">
+          <h3>Articles en Cuisine :</h3>
           <ul>
-            {kitchenOrders.map((order) => (
-              <li key={order.id}>
-                {/* Afficher les détails de la commande en cuisine */}
+            {kitchenItems.map((item) => (
+              <li
+                key={item.id}
+                className={item.status === "en_cours" ? "pending" : "ready"}
+              >
+                {item.title}{" "}
+                {item.status === "en_cours" ? (
+                  <button onClick={() => handleKitchenItemPrepared(item)}>
+                    Prêt
+                  </button>
+                ) : (
+                  <span>Prêt à servir</span>
+                )}
               </li>
             ))}
           </ul>
         </div>
-        <div className="bar-orders">
-          <h3>Commandes en préparation (Bar) :</h3>
+        <div className="bar-items">
+          <h3>Articles au Bar :</h3>
           <ul>
-            {barOrders.map((order) => (
-              <li key={order.id}>
-                {/* Afficher les détails de la commande au bar */}
+            {barItems.map((item) => (
+              <li
+                key={item.id}
+                className={item.status === "en_cours" ? "pending" : "ready"}
+              >
+                {item.title}{" "}
+                {item.status === "en_cours" ? (
+                  <button onClick={() => handleBarItemPrepared(item)}>
+                    Prêt
+                  </button>
+                ) : (
+                  <span>Prêt à servir</span>
+                )}
               </li>
             ))}
           </ul>
