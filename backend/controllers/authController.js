@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const connection = require("../server").connection;
 require("dotenv").config();
 
-const registerUser = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { login, password, role } = req.body;
 
@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { login, password } = req.body;
 
@@ -55,6 +55,6 @@ const loginUser = async (req, res) => {
 };
 
 module.exports = {
-  registerUser,
-  loginUser,
+  register,
+  login,
 };

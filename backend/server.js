@@ -1,285 +1,373 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
-const sequelize = require("./config/db"); // Importez votre instance Sequelize
-const app = express();
-const PORT = process.env.PORT || 5000;
+const authRoutes = require("./routes/auth");
+const itemsRoutes = require("./routes/items");
+const tablesRoutes = require("./routes/tables");
+const ordersRoutes = require("./routes/orders");
+const sequelize = require("./config/db");
 
-app.use(cors());
-app.use(express.json());
-
-// Définissez vos modèles Sequelize ici
+// Importez tous vos modèles ici
 const User = require("./models/User");
 const Table = require("./models/Table");
 const OrderItem = require("./models/OrderItem");
 const Order = require("./models/Order");
 const Item = require("./models/Item");
-const Client = require("./models/Client");
-const Category = require("./models/Category");
 const KitchenItem = require("./models/KitchenItem");
 const BarItem = require("./models/BarItem");
+const Client = require("./models/Client");
+const Category = require("./models/Category");
+
+const app = express();
+
+// Middleware pour gérer les requêtes POST avec des données JSON
+app.use(bodyParser.json());
+
+// Middleware pour autoriser les requêtes depuis des domaines différents
+app.use(cors());
+
+// Utilisation des routes liées aux articles
+app.use(authRoutes);
+app.use(itemsRoutes);
+app.use(tablesRoutes);
+app.use(ordersRoutes);
+
+// Port sur lequel le serveur va écouter
+const port = process.env.PORT || 5000;
+
+// Synchronisation de la base de données et démarrage du serveur
+sequelize
+  .sync()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database synchronization error:", error);
+  });
+
+// *****************************************
+
+// const express = require("express");
+// const bodyParser = require("body-parser");
+// const cors = require("cors");
+// const items = require("./routes/items");
+// const sequelize = require("./config/db"); // Importez votre instance Sequelize
+// const app = express();
+// const PORT = process.env.PORT || 5000;
+// // Définissez vos modèles Sequelize ici
+// // const User = require("./models/User");
+// // const Table = require("./models/Table");
+// // const OrderItem = require("./models/OrderItem");
+// // const Order = require("./models/Order");
+// const item = require("./models/Item");
+// // const Client = require("./models/Client");
+// // const Category = require("./models/Category");
+// // const KitchenItem = require("./models/KitchenItem");
+// // const BarItem = require("./models/BarItem");
+
+// app.use(bodyParser.json());
+
+// app.use(
+//   cors({
+//     origin: "*",
+//   })
+// );
+// app.use(express.json());
+// app.use("/api", items);
+
+// // Synchronisez les modèles Sequelize avec la base de données
+// sequelize
+//   .sync()
+//   .then(() => {
+//     console.log("Modèles de la base de données synchronisés");
+
+//     // Lancez le serveur une fois que les modèles sont synchronisés
+//     app.listen(PORT, () => {
+//       console.log(`Le serveur fonctionne sur le port ${PORT}`);
+//     });
+//   })
+//   .catch((error) => {
+//     console.error(
+//       "Erreur lors de la synchronisation des modèles de la base de données :",
+//       error
+//     );
+//   });
+
 // ... Importez d'autres modèles si nécessaire
 
 // Routes
-// Exemple de configuration pour renvoyer des données Sequelize
-app.get("/api/items", async (req, res) => {
-  try {
-    const items = await Item.findAll();
-    res.json(items);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+// // Exemple de configuration pour renvoyer des données Sequelize
+// app.get("/api/items", async (req, res) => {
+//   try {
+//     const items = await Item.findAll();
+//     res.json(items);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-app.get("/api/orders", async (req, res) => {
-  try {
-    const orders = await Order.findAll();
-    res.json(orders);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+// app.delete("/api/items/:id", async (req, res) => {
+//   try {
+//     const itemId = req.params.id;
+//     await Item.destroy({ where: { id: itemId } });
+//     res.status(200).json({ message: "Item deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "An error occurred while deleting an item" });
+//   }
+// });
 
-app.post("/api/orders", async (req, res) => {
-  try {
-    const { items } = req.body;
+// app.get("/api/orders", async (req, res) => {
+//   try {
+//     const orders = await Order.findAll();
+//     res.json(orders);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    if (!items || items.length === 0) {
-      return res.status(400).json({ error: "La commande est vide" });
-    }
+// app.post("/api/orders", async (req, res) => {
+//   try {
+//     const { items } = req.body;
 
-    // Créer une nouvelle commande avec les articles
-    const newOrder = await Order.create({
-      items: JSON.stringify(items), // Convertir les articles en JSON
-    });
+//     if (!items || items.length === 0) {
+//       return res.status(400).json({ error: "La commande est vide" });
+//     }
 
-    res.status(201).json(newOrder);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     // Créer une nouvelle commande avec les articles
+//     const newOrder = await Order.create({
+//       items: JSON.stringify(items), // Convertir les articles en JSON
+//     });
 
-// Route pour obtenir la liste des catégories
-app.get("/api/categories", async (req, res) => {
-  try {
-    const categories = await Category.findAll();
-    res.json(categories);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     res.status(201).json(newOrder);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-app.get("/api/tables", async (req, res) => {
-  try {
-    const tables = await Table.findAll();
-    res.json(tables);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+// // Route pour obtenir la liste des catégories
+// app.get("/api/categories", async (req, res) => {
+//   try {
+//     const categories = await Category.findAll();
+//     res.json(categories);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-app.post("/api/tables", async (req, res) => {
-  try {
-    const { tableNumber, totalCovers } = req.body;
+// app.get("/api/tables", async (req, res) => {
+//   try {
+//     const tables = await Table.findAll();
+//     res.json(tables);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    if (!tableNumber || !totalCovers) {
-      return res
-        .status(400)
-        .json({ error: "Numéro de table et capacité requis" });
-    }
+// app.post("/api/tables", async (req, res) => {
+//   try {
+//     const { tableNumber, totalCovers } = req.body;
 
-    const newTable = await Table.create({
-      tableNumber,
-      totalCovers,
-    });
+//     if (!tableNumber || !totalCovers) {
+//       return res
+//         .status(400)
+//         .json({ error: "Numéro de table et capacité requis" });
+//     }
 
-    res.status(201).json(newTable);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     const newTable = await Table.create({
+//       tableNumber,
+//       totalCovers,
+//     });
 
-// Route pour obtenir les articles en cuisine
-app.get("/api/kitchen_items", async (req, res) => {
-  try {
-    const kitchenItems = await KitchenItem.findAll();
-    res.json(kitchenItems);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     res.status(201).json(newTable);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-// Route pour obtenir les articles au bar
-app.get("/api/bar_items", async (req, res) => {
-  try {
-    const barItems = await BarItem.findAll();
-    res.json(barItems);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+// // Route pour obtenir les articles en cuisine
+// app.get("/api/kitchen_items", async (req, res) => {
+//   try {
+//     const kitchenItems = await KitchenItem.findAll();
+//     res.json(kitchenItems);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-// Route pour mettre à jour le statut d'un article en cuisine
-app.put("/api/kitchen_items/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
+// // Route pour obtenir les articles au bar
+// app.get("/api/bar_items", async (req, res) => {
+//   try {
+//     const barItems = await BarItem.findAll();
+//     res.json(barItems);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    const kitchenItem = await KitchenItem.findByPk(id);
+// // Route pour mettre à jour le statut d'un article en cuisine
+// app.put("/api/kitchen_items/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { status } = req.body;
 
-    if (!kitchenItem) {
-      return res.status(404).json({ error: "Article introuvable" });
-    }
+//     const kitchenItem = await KitchenItem.findByPk(id);
 
-    await kitchenItem.update({ status });
+//     if (!kitchenItem) {
+//       return res.status(404).json({ error: "Article introuvable" });
+//     }
 
-    res
-      .status(200)
-      .json({ message: "Statut de l'article mis à jour avec succès" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     await kitchenItem.update({ status });
 
-// Route pour mettre à jour le statut d'un article au bar
-app.put("/api/bar_items/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
+//     res
+//       .status(200)
+//       .json({ message: "Statut de l'article mis à jour avec succès" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    const barItem = await BarItem.findByPk(id);
+// // Route pour mettre à jour le statut d'un article au bar
+// app.put("/api/bar_items/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { status } = req.body;
 
-    if (!barItem) {
-      return res.status(404).json({ error: "Article introuvable" });
-    }
+//     const barItem = await BarItem.findByPk(id);
 
-    await barItem.update({ status });
+//     if (!barItem) {
+//       return res.status(404).json({ error: "Article introuvable" });
+//     }
 
-    res
-      .status(200)
-      .json({ message: "Statut de l'article mis à jour avec succès" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     await barItem.update({ status });
 
-app.post("/api/kitchen-orders/:tableId", async (req, res) => {
-  try {
-    const { items } = req.body;
-    const { tableId } = req.params;
+//     res
+//       .status(200)
+//       .json({ message: "Statut de l'article mis à jour avec succès" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    // Créer une nouvelle commande en cuisine pour la table donnée
-    const newKitchenOrder = await Order.create({
-      table_id: tableId,
-      status: "en_cours", // Ou utilisez le statut approprié
-    });
+// app.post("/api/kitchen-orders/:tableId", async (req, res) => {
+//   try {
+//     const { items } = req.body;
+//     const { tableId } = req.params;
 
-    for (const item of items) {
-      await KitchenItem.create({
-        order_id: newKitchenOrder.id,
-        order_item_id: item.id,
-        quantity: item.quantity,
-      });
-    }
+//     // Créer une nouvelle commande en cuisine pour la table donnée
+//     const newKitchenOrder = await Order.create({
+//       table_id: tableId,
+//       status: "en_cours", // Ou utilisez le statut approprié
+//     });
 
-    res.status(201).json(newKitchenOrder);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     for (const item of items) {
+//       await KitchenItem.create({
+//         order_id: newKitchenOrder.id,
+//         order_item_id: item.id,
+//         quantity: item.quantity,
+//       });
+//     }
 
-app.post("/api/bar-orders/:tableId", async (req, res) => {
-  try {
-    const { items } = req.body;
-    const { tableId } = req.params;
+//     res.status(201).json(newKitchenOrder);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    // Créer une nouvelle commande au bar pour la table donnée
-    const newBarOrder = await Order.create({
-      table_id: tableId,
-      status: "en_cours", // Ou utilisez le statut approprié
-    });
+// app.post("/api/bar-orders/:tableId", async (req, res) => {
+//   try {
+//     const { items } = req.body;
+//     const { tableId } = req.params;
 
-    for (const item of items) {
-      await BarItem.create({
-        order_id: newBarOrder.id,
-        order_item_id: item.id,
-      });
-    }
+//     // Créer une nouvelle commande au bar pour la table donnée
+//     const newBarOrder = await Order.create({
+//       table_id: tableId,
+//       status: "en_cours", // Ou utilisez le statut approprié
+//     });
 
-    res.status(201).json(newBarOrder);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     for (const item of items) {
+//       await BarItem.create({
+//         order_id: newBarOrder.id,
+//         order_item_id: item.id,
+//       });
+//     }
 
-app.get("/api/tables/:tableNumber/orders", async (req, res) => {
-  try {
-    const { tableNumber } = req.params;
+//     res.status(201).json(newBarOrder);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
-    // Requête à la base de données pour récupérer les articles commandés par la table spécifique
-    const tableOrders = await Order.findAll({
-      where: { table_id: tableNumber },
-      include: [
-        {
-          model: OrderItem,
-          include: Item, // Assurez-vous que les associations sont correctement définies
-        },
-      ],
-    });
+// app.get("/api/tables/:tableNumber/orders", async (req, res) => {
+//   try {
+//     const { tableNumber } = req.params;
 
-    const formattedTableOrders = tableOrders.map((order) => {
-      return {
-        tableNumber: order.table_id,
-        items: order.order_items.map((orderItem) => {
-          return {
-            itemTitle: orderItem.item.title,
-            quantity: orderItem.quantity,
-            // Ajoutez d'autres informations si nécessaire
-          };
-        }),
-      };
-    });
+//     // Requête à la base de données pour récupérer les articles commandés par la table spécifique
+//     const tableOrders = await Order.findAll({
+//       where: { table_id: tableNumber },
+//       include: [
+//         {
+//           model: OrderItem,
+//           include: Item, // Assurez-vous que les associations sont correctement définies
+//         },
+//       ],
+//     });
 
-    res.json(formattedTableOrders);
-  } catch (error) {
-    console.error(
-      "Erreur lors de la récupération des commandes de la table:",
-      error
-    );
-    res.status(500).json({ error: "Erreur interne du serveur" });
-  }
-});
+//     const formattedTableOrders = tableOrders.map((order) => {
+//       return {
+//         tableNumber: order.table_id,
+//         items: order.order_items.map((orderItem) => {
+//           return {
+//             itemTitle: orderItem.item.title,
+//             quantity: orderItem.quantity,
+//             // Ajoutez d'autres informations si nécessaire
+//           };
+//         }),
+//       };
+//     });
+
+//     res.json(formattedTableOrders);
+//   } catch (error) {
+//     console.error(
+//       "Erreur lors de la récupération des commandes de la table:",
+//       error
+//     );
+//     res.status(500).json({ error: "Erreur interne du serveur" });
+//   }
+// });
 
 // Autres routes et configurations...
 
 // Synchronisez les modèles Sequelize avec la base de données
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Modèles de la base de données synchronisés");
+// sequelize
+//   .sync()
+//   .then(() => {
+//     console.log("Modèles de la base de données synchronisés");
 
-    // Lancez le serveur une fois que les modèles sont synchronisés
-    app.listen(PORT, () => {
-      console.log(`Le serveur fonctionne sur le port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error(
-      "Erreur lors de la synchronisation des modèles de la base de données :",
-      error
-    );
-  });
+//     // Lancez le serveur une fois que les modèles sont synchronisés
+//     app.listen(PORT, () => {
+//       console.log(`Le serveur fonctionne sur le port ${PORT}`);
+//     });
+//   })
+//   .catch((error) => {
+//     console.error(
+//       "Erreur lors de la synchronisation des modèles de la base de données :",
+//       error
+//     );
+//   });
 
 // // derniere modif: 16/08/2021 par James
 // const express = require("express");
@@ -465,7 +553,7 @@ sequelize
 
 // // Utiliser le middleware d'authentification uniquement pour les routes qui en ont besoin
 // const authenticateUser = require("./middleware/auth");
-// app.use("/api/items", require("./routes/itemRoutes")); // Protéger les routes des articles avec le middleware d'authentification
+// app.use("/api/items", require("./routes/items")); // Protéger les routes des articles avec le middleware d'authentification
 // app.use("/api/auth", require("./routes/user")); // Routes pour gérer les utilisateurs (auth)
 
 // ****************************************************************

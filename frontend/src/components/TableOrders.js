@@ -3,6 +3,7 @@ import axios from "axios";
 
 function TableOrders({ tableNumber }) {
   const [tableOrders, setTableOrders] = useState([]);
+  const [error, setError] = useState(null); // Ajout d'un état pour gérer les erreurs
 
   useEffect(() => {
     // Appel à l'API pour récupérer les articles enregistrés pour la table spécifique
@@ -17,11 +18,16 @@ function TableOrders({ tableNumber }) {
           "Erreur lors de la récupération des commandes de la table:",
           error
         );
+        setError(error);
       }
     }
 
     fetchTableOrders();
   }, [tableNumber]);
+
+  if (error) {
+    return <div>Erreur lors de la récupération des commandes de la table.</div>;
+  }
 
   return (
     <div className="table-orders-container">

@@ -9,6 +9,7 @@ import TableSelection from "./components/TableSelection";
 import TableOrders from "./components/TableOrders";
 import Navigation from "./components/Navigation";
 import OrderManagement from "./components/OrderManagement";
+import ItemForm from "./components/ItemForm";
 
 function App() {
   // Votre code de composant App ici
@@ -16,7 +17,7 @@ function App() {
     <div className="App">
       <Navigation />
       <Routes>
-        <Route path="/" element={<TableSelection />} />
+        <Route path="/" element={<AdminPanel />} />
         <Route path="/tableSelection" element={<TableSelection />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/orderManagement" element={<OrderManagement />} />
@@ -24,6 +25,7 @@ function App() {
         <Route path="/api/auth/login" element={<Login />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/tableOrders" element={<TableOrders />} />
+        <Route path="/itemForm" element={<ItemForm />} />
       </Routes>
     </div>
   );

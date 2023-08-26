@@ -38,29 +38,30 @@
 // app.use("/images", express.static(path.join(__dirname, "images")));
 
 // module.exports = app;
+// ***************************************
+// ****************************************
+// const express = require("express");
+// const app = express();
+// const bodyParser = require("body-parser");
+// const cors = require("cors");
 
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const cors = require("cors");
+// const authRoutes = require("./routes/auth");
+// const itemsRoutes = require("./routes/items");
+// const tablesRoutes = require("./routes/tables");
+// const ordersRoutes = require("./routes/orders");
 
-const authRoutes = require("./routes/auth");
-const itemsRoutes = require("./routes/items");
-const tablesRoutes = require("./routes/tables");
-const ordersRoutes = require("./routes/orders");
+// app.use(bodyParser.json());
+// app.use(cors());
 
-app.use(bodyParser.json());
-app.use(cors());
+// app.use("/api/auth", authRoutes);
+// app.use("/api/items", itemsRoutes);
+// app.use("/api/tables", tablesRoutes);
+// app.use("/api/orders", ordersRoutes);
 
-app.use("/api/auth", authRoutes);
-app.use("/api/items", itemsRoutes);
-app.use("/api/tables", tablesRoutes);
-app.use("/api/orders", ordersRoutes);
+// // Gestionnaire d'erreur global
+// app.use((error, req, res, next) => {
+//   console.error(error);
+//   res.status(500).json({ message: "Une erreur est survenue sur le serveur." });
+// });
 
-// Gestionnaire d'erreur global
-app.use((error, req, res, next) => {
-  console.error(error);
-  res.status(500).json({ message: "Une erreur est survenue sur le serveur." });
-});
-
-module.exports = app;
+// module.exports = app;
