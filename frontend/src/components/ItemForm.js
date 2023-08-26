@@ -1,6 +1,5 @@
 // components/ItemForm.js
 import React from "react";
-import axios from "axios";
 import "./ItemForm.css";
 
 const ItemForm = ({
@@ -13,7 +12,10 @@ const ItemForm = ({
   setCategory,
   message,
   error,
+  selectedItemId,
 }) => {
+  const isEditing = selectedItemId !== null; // Vérifie si vous êtes en train de modifier
+  const buttonText = isEditing ? "Modifier" : "Créer"; // Texte du bouton
   return (
     <div className="admin-form-container">
       <h3>Formulaire de création d'article</h3>
@@ -55,7 +57,7 @@ const ItemForm = ({
           <option value="4">Boissons</option>
         </select>
         <button className="admin-form-button" type="submit">
-          Créer
+          {buttonText} {/* Utilisation du texte conditionnel */}
         </button>
       </form>
     </div>
