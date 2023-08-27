@@ -44,7 +44,7 @@ const AdminPanel = () => {
       setTitle(""); // Réinitialise les champs
       setPrice("");
       setCategory("");
-      setSelectedItemId(null);
+      // setSelectedItemId(null);
       fetchItems(); // Met à jour la liste des articles
     } catch (error) {
       setError("Erreur lors de la création de l'article.");
@@ -53,29 +53,72 @@ const AdminPanel = () => {
     }
   };
 
+  // const handleEditItem = async (id) => {
+  //   try {
+  //     setSelectedItemId(id);
+
+  //     // Trouver l'article correspondant dans la liste
+  //     const selectedItem = items.find((item) => item.id === id);
+  //     console.log("selectedItem:", selectedItem);
+
+  //     // Mettre à jour les états avec les valeurs de l'article
+  //     setTitle(selectedItem.title);
+  //     setPrice(selectedItem.price);
+  //     console.log("selectedItem.price:", selectedItem.price);
+  //     setCategory(selectedItem.category);
+
+  //     const updatedItemData = {
+  //       title: selectedItem.title,
+  //       price: parseFloat(selectedItem.price), // Convertir en nombre décimal
+  //       category_id: selectedItem.category,
+  //       description: selectedItem.description,
+  //     };
+  //     console.log("updatedItemData:", updatedItemData);
+
+  //     await axios.put(`http://localhost:5000/items/${id}`, updatedItemData);
+  //     setMessage("Article modifié avec succès !");
+  //     setError("");
+  //     fetchItems();
+
+  //     setSelectedItemId(null); // Réinitialise l'état pour indiquer que vous n'êtes plus en mode édition
+  //   } catch (error) {
+  //     setError("Erreur lors de la modification de l'article.");
+  //     setMessage("");
+  //     console.error("Error editing item:", error);
+  //   }
+  // };
+
   const handleEditItem = async (id) => {
     try {
       setSelectedItemId(id);
 
       // Trouver l'article correspondant dans la liste
       const selectedItem = items.find((item) => item.id === id);
+      console.log("selectedItem:", selectedItem);
 
       // Mettre à jour les états avec les valeurs de l'article
       setTitle(selectedItem.title);
       setPrice(selectedItem.price);
+      console.log("selectedItem.price:", selectedItem.price);
       setCategory(selectedItem.category);
 
       const updatedItemData = {
-        title: title,
-        price: price,
-        category_id: category,
+        title: selectedItem.title,
+        price: parseFloat(selectedItem.price), // Utilisez directement selectedItem.price
+        category_id: selectedItem.category,
         description: selectedItem.description,
       };
+      console.log("updatedItemData:", updatedItemData);
 
       await axios.put(`http://localhost:5000/items/${id}`, updatedItemData);
       setMessage("Article modifié avec succès !");
       setError("");
-      fetchItems();
+
+      // Filtrer les articles pour ne garder que les articles modifiés
+      const updatedItemsList = items.filter((item) => item.id !== id);
+      setItems(updatedItemsList);
+
+      setSelectedItemId(null); // Réinitialise l'état pour indiquer que vous n'êtes plus en mode édition
     } catch (error) {
       setError("Erreur lors de la modification de l'article.");
       setMessage("");
@@ -134,7 +177,9 @@ const AdminPanel = () => {
         setCategory={setCategory}
         message={message}
         error={error}
-        handleCreateOrUpdateItem={handleCreateItem} // Passez la fonction de création
+        handleCreateOrUpdateItem={
+          selectedItemId !== null ? handleEditItem : handleCreateItem
+        }
         selectedItemId={selectedItemId}
       />
     </div>
