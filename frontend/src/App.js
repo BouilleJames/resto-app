@@ -1,31 +1,59 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useState } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
 import RegisterForm from "./components/RegisterForm";
 import Login from "./components/Login";
 import AdminPanel from "./components/AdminPanel";
 import Dashboard from "./components/Dashboard";
-import "./App.css";
+import Navigation from "./components/Navigation";
+import ForgotPassword from "./components/ForgotPassword";
 import TableSelection from "./components/TableSelection";
 import TableOrders from "./components/TableOrders";
-import Navigation from "./components/Navigation";
-import OrderManagement from "./components/OrderManagement";
 import ItemForm from "./components/ItemForm";
 
 function App() {
-  // Votre code de composant App ici
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
   return (
     <div className="App">
       <Navigation />
+      {/* <nav>
+          <ul>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/registerForm">Register</Link>
+            </li>
+          </ul>
+        </nav> */}
       <Routes>
-        <Route path="/" element={<AdminPanel />} />
+        <Route
+          path="/"
+          element={
+            isLoggedIn ? (
+              isAdmin ? (
+                <AdminPanel />
+              ) : (
+                <Dashboard isAdmin={isAdmin} />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <Login setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />
+          }
+        />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/registerForm" element={<RegisterForm />} />
         <Route path="/tableSelection" element={<TableSelection />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/orderManagement" element={<OrderManagement />} />
-        <Route path="/api/auth/signup" element={<RegisterForm />} />
-        <Route path="/api/auth/login" element={<Login />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/tableOrders" element={<TableOrders />} />
-        <Route path="/itemForm" element={<ItemForm />} />
+        <Route path="/dashboard/tableOrders" element={<TableOrders />} />
+        <Route path="/dashboard/itemForm" element={<ItemForm />} />
       </Routes>
     </div>
   );

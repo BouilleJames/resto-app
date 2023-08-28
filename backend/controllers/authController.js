@@ -1,19 +1,25 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const connection = require("../server").connection;
+const User = require("../models/User");
 require("dotenv").config();
 
 const register = async (req, res) => {
   try {
+    console.log("Received registration request:", req.body);
     const { login, password, role } = req.body;
 
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await connection.query(
-      "INSERT INTO users (login, password, role) VALUES (?, ?, ?)",
-      [login, hashedPassword, role]
-    );
+    console.log("Hashed password:", hashedPassword);
+
+    await User.create({
+      login: login,
+      password: hashedPassword,
+      role: role,
+    });
+
+    console.log("User registered successfully");
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -27,10 +33,9 @@ const login = async (req, res) => {
   try {
     const { login, password } = req.body;
 
-    const [user] = await connection.query(
-      "SELECT * FROM users WHERE login = ?",
-      [login]
-    );
+    const user = await User.findOne({
+      where: { login: login },
+    });
 
     if (!user) {
       return res.status(401).json({ error: "Authentication failed" });
@@ -45,7 +50,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "8h" }
     );
 
     res.status(200).json({ token });

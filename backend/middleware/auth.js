@@ -62,10 +62,10 @@
 // };
 // *******************************
 const jwt = require("jsonwebtoken");
-const { pool } = require("../config/db");
+const sequelize = require("../config/db");
 require("dotenv").config();
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   // Si c'est une requête OPTIONS, renvoyez simplement une réponse OK
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
@@ -82,22 +82,15 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
     const userId = decodedToken.userId;
 
-    pool.execute(
-      "SELECT * FROM users WHERE id = ?",
-      [userId],
-      (error, [rows]) => {
-        if (error) {
-          return res.status(401).json({ error: error.message });
-        }
+    // Utilisation de Sequelize pour rechercher l'utilisateur
+    const user = await sequelize.models.User.findByPk(userId);
 
-        if (rows.length === 0) {
-          return res.status(401).json({ error: "Utilisateur non trouvé" });
-        }
+    if (!user) {
+      return res.status(401).json({ error: "Utilisateur non trouvé" });
+    }
 
-        req.auth = { userId: userId };
-        next();
-      }
-    );
+    req.auth = { userId: user.id };
+    next();
   } catch (error) {
     res.status(401).json({ error: error.message });
   }

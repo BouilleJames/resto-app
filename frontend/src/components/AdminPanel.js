@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ItemForm from "./ItemForm";
 
-const AdminPanel = () => {
+const AdminPanel = ({ isAdmin }) => {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState(""); // Utilisation du hook useState ici
   const [price, setPrice] = useState(""); // Utilisation du hook useState ici
@@ -14,6 +14,10 @@ const AdminPanel = () => {
   useEffect(() => {
     fetchItems();
   }, []);
+
+  if (!isAdmin) {
+    return <div>Vous n'êtes pas autorisé à accéder à cette page.</div>;
+  }
 
   const fetchItems = async () => {
     try {
@@ -53,41 +57,6 @@ const AdminPanel = () => {
     }
   };
 
-  // const handleEditItem = async (id) => {
-  //   try {
-  //     setSelectedItemId(id);
-
-  //     // Trouver l'article correspondant dans la liste
-  //     const selectedItem = items.find((item) => item.id === id);
-  //     console.log("selectedItem:", selectedItem);
-
-  //     // Mettre à jour les états avec les valeurs de l'article
-  //     setTitle(selectedItem.title);
-  //     setPrice(selectedItem.price);
-  //     console.log("selectedItem.price:", selectedItem.price);
-  //     setCategory(selectedItem.category);
-
-  //     const updatedItemData = {
-  //       title: selectedItem.title,
-  //       price: parseFloat(selectedItem.price), // Convertir en nombre décimal
-  //       category_id: selectedItem.category,
-  //       description: selectedItem.description,
-  //     };
-  //     console.log("updatedItemData:", updatedItemData);
-
-  //     await axios.put(`http://localhost:5000/items/${id}`, updatedItemData);
-  //     setMessage("Article modifié avec succès !");
-  //     setError("");
-  //     fetchItems();
-
-  //     setSelectedItemId(null); // Réinitialise l'état pour indiquer que vous n'êtes plus en mode édition
-  //   } catch (error) {
-  //     setError("Erreur lors de la modification de l'article.");
-  //     setMessage("");
-  //     console.error("Error editing item:", error);
-  //   }
-  // };
-
   const handleEditItem = async (id) => {
     try {
       setSelectedItemId(id);
@@ -104,7 +73,7 @@ const AdminPanel = () => {
 
       const updatedItemData = {
         title: selectedItem.title,
-        price: parseFloat(selectedItem.price), // Utilisez directement selectedItem.price
+        price: parseFloat(selectedItem.price), // Convertir en nombre décimal
         category_id: selectedItem.category,
         description: selectedItem.description,
       };
@@ -113,10 +82,7 @@ const AdminPanel = () => {
       await axios.put(`http://localhost:5000/items/${id}`, updatedItemData);
       setMessage("Article modifié avec succès !");
       setError("");
-
-      // Filtrer les articles pour ne garder que les articles modifiés
-      const updatedItemsList = items.filter((item) => item.id !== id);
-      setItems(updatedItemsList);
+      fetchItems();
 
       setSelectedItemId(null); // Réinitialise l'état pour indiquer que vous n'êtes plus en mode édition
     } catch (error) {

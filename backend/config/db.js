@@ -4,6 +4,7 @@ const Sequelize = require("sequelize");
 const sequelize = new Sequelize("app_resto", "root", "root", {
   host: "localhost",
   dialect: "mysql",
+  logging: console.log,
   pool: {
     max: 5,
     min: 0,

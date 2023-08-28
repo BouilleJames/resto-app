@@ -23,8 +23,14 @@ const app = express();
 // Middleware pour gérer les requêtes POST avec des données JSON
 app.use(bodyParser.json());
 
-// Middleware pour autoriser les requêtes depuis des domaines différents
-app.use(cors());
+// Utilisez le middleware CORS pour autoriser les requêtes provenant de http://localhost:3000
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 
 // Utilisation des routes liées aux articles
 app.use(authRoutes);
@@ -37,7 +43,7 @@ const port = process.env.PORT || 5000;
 
 // Synchronisation de la base de données et démarrage du serveur
 sequelize
-  .sync()
+  .sync({ logging: console.log })
   .then(() => {
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
@@ -46,6 +52,11 @@ sequelize
   .catch((error) => {
     console.error("Database synchronization error:", error);
   });
+
+// // Exportez la variable pool
+// module.exports = {
+//   pool: sequelize,
+// };
 
 // *****************************************
 
