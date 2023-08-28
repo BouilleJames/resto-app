@@ -66,6 +66,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./TableSelection.css";
 
 function TableSelection() {
   const [tableNumber, setTableNumber] = useState("");
@@ -94,10 +95,10 @@ function TableSelection() {
   };
 
   return (
-    <div>
+    <div className="table-selection-container">
       <h2>Sélection de la Table</h2>
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="align">
           <label>Numéro de Table:</label>
           <input
             type="number"
@@ -106,7 +107,7 @@ function TableSelection() {
             required
           />
         </div>
-        <div>
+        <div className="align">
           <label>Nombre de Personnes:</label>
           <input
             type="number"

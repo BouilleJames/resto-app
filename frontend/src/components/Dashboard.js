@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 // import Categories from "./Categories";
 import TableOrders from "./TableOrders";
+import { useParams } from "react-router-dom";
 import "./Dashboard.css";
 
 function Dashboard() {
+  const { tableNumber } = useParams();
   const [items, setItems] = useState([]); // État pour stocker la liste des articles
   const [cart, setCart] = useState([]); // État pour stocker le panier
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -54,7 +56,7 @@ function Dashboard() {
   };
 
   const generateKitchenTicket = () => {
-    console.log("Kitchen Ticket Generated:");
+    console.log(`Kitchen Ticket Generated for Table: {tableNumber}`);
 
     // Filtrer les articles du panier par catégories 1 à 3
     const kitchenItems = cart.filter(
@@ -93,7 +95,7 @@ function Dashboard() {
   };
 
   const generateBarTicket = () => {
-    console.log("Bar Ticket Generated:");
+    console.log(`Bar Ticket Generated for Table: {tableNumber}:`);
 
     // Filtrer les articles du panier par catégories 4 (boissons)
     const barItems = cart.filter((cartItem) => cartItem.category_id === 4);

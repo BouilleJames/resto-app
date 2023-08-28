@@ -51,7 +51,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/registerForm" element={<RegisterForm />} />
         <Route path="/tableSelection" element={<TableSelection />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/:tableNumber" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Navigate to="/tableSelection" />} />
         <Route path="/dashboard/tableOrders" element={<TableOrders />} />
         <Route path="/dashboard/itemForm" element={<ItemForm />} />
       </Routes>
