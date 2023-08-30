@@ -31,7 +31,7 @@ function TableOrders({ tableNumber }) {
 
   return (
     <div className="table-orders-container">
-      <h3>Commandes pour la Table {tableNumber} :</h3>
+      <h3>Commandes pour la Table : {tableNumber}</h3>
       {tableOrders.map((order, index) => (
         <div key={index} className="table-order">
           <h4>Commande {index + 1}</h4>

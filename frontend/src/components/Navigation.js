@@ -13,6 +13,9 @@ function Navigation() {
           <Link to="/dashboard">Dashboard</Link>
         </li>
         <li>
+          <Link to="/tableChoice">Choix de Table</Link>
+        </li>
+        <li>
           <Link to="/tableOrders">Articles commandés</Link>
         </li>
       </ul>

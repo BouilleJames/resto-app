@@ -1,0 +1,35 @@
+.table-choice-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.table-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.table-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Pour créer la forme de cercle */
+  background-color: #3498db; /* Couleur de fond du cercle */
+  color: white; /* Couleur du texte à l'intérieur du cercle */
+  font-size: 18px; /* Taille de la police du texte */
+  margin: 5px; /* Marge entre les cercles */
+  cursor: pointer; /* Curseur de souris au survol */
+  transition: background-color 0.3s, transform 0.2s; /* Effets de transition */
+}
+
+.table-circle:hover {
+  background-color: #2980b9; /* Couleur de fond au survol */
+  transform: scale(1.1); /* Légèrement agrandi au survol */
+}
+
+.table-orders {
+  margin-top: 20px;
+  text-align: center;
+}

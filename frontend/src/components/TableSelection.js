@@ -88,7 +88,7 @@ function TableSelection() {
       // Réinitialisez les champs après l'enregistrement
       setTableNumber("");
       setTotalCovers("");
-      navigate("/dashboard");
+      navigate(`/dashboard/${tableNumber}`);
     } catch (error) {
       console.error("Erreur lors de l'enregistrement:", error.response.data);
     }

@@ -9,6 +9,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import TableSelection from "./components/TableSelection";
 import TableOrders from "./components/TableOrders";
 import ItemForm from "./components/ItemForm";
+import TableChoice from "./components/TableChoice";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,7 +36,7 @@ function App() {
               isAdmin ? (
                 <AdminPanel />
               ) : (
-                <Dashboard isAdmin={isAdmin} />
+                <Navigate to="/tableChoice" /> // Redirige vers la sélection de la table
               )
             ) : (
               <Navigate to="/login" />
@@ -51,10 +52,11 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/registerForm" element={<RegisterForm />} />
         <Route path="/tableSelection" element={<TableSelection />} />
+        <Route path="/tableChoice" element={<TableChoice />} />
         <Route path="/dashboard/:tableNumber" element={<Dashboard />} />
         <Route path="/dashboard" element={<Navigate to="/tableSelection" />} />
-        <Route path="/dashboard/tableOrders" element={<TableOrders />} />
-        <Route path="/dashboard/itemForm" element={<ItemForm />} />
+        <Route path="/tableOrders" element={<TableOrders />} />
+        <Route path="/itemForm" element={<ItemForm />} />
       </Routes>
     </div>
   );

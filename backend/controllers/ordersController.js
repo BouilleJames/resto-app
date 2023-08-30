@@ -12,7 +12,8 @@ const getOrder = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    const { tableNumber, numberOfPeople } = req.body;
+    const numberOfPeople = req.body;
+    const tableNumber = req.params.number;
 
     // Créer une nouvelle commande dans la base de données avec le numéro de table et le nombre de personnes
     const result = await sequelize.query(
