@@ -22,7 +22,12 @@ function Login({ setIsLoggedIn, setIsAdmin }) {
 
       setIsLoggedIn(true);
       setIsAdmin(response.data.role === "admin"); // Utilisation du rôle
-      navigate("/tableSelection");
+
+      if (response.data.role === "admin") {
+        navigate("/adminPanel");
+      } else {
+        navigate("/tableSelection");
+      }
     } catch (error) {
       console.error("Erreur d'authentification", error);
     }

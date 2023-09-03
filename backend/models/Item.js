@@ -58,13 +58,13 @@ Item.sync({ force: false }) // Utilisez force: false pour éviter la recréation
           category_id: 2,
           title: "Country delight",
           description: "Un excellent Croc quand on a les crocs.",
-          price: 20.99,
+          price: 11.99,
         },
         {
           category_id: 1,
           title: "Egg attack",
           description: "Hamburger à l'oeuf pour les boxeurs.",
-          price: 22.99,
+          price: 11.99,
         },
         {
           category_id: 3,

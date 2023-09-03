@@ -5,10 +5,14 @@ import "./TableChoice.css";
 function TableChoice({ currentTable, onChangeTable }) {
   const totalTables = 100; // Nombre total de tables
   const [tableOrders, setTableOrders] = useState([]);
+  const [tableStatus, setTableStatus] = useState({});
 
   useEffect(() => {
     // Récupérer les commandes de la table actuelle depuis l'API
     fetchTableOrders(currentTable);
+
+    // Récupérer le statut de toutes les tables
+    fetchTableStatus();
   }, [currentTable]);
 
   const fetchTableOrders = async (tableNumber) => {
@@ -25,12 +29,37 @@ function TableChoice({ currentTable, onChangeTable }) {
     }
   };
 
+  const fetchTableStatus = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/tables/status"
+      );
+      setTableStatus(response.data);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération du statut des tables:",
+        error
+      );
+    }
+  };
+
   const isTableOpen = (tableNumber) => {
     const openOrder = tableOrders.find(
       (order) => order.table_id === tableNumber && order.status === "en_cours"
     );
     return openOrder;
   };
+
+  const isTableEnCours = (tableNumber) => {
+    return tableStatus[tableNumber] === "en_cours";
+  };
+
+  // const isTableEnCours = async (tableId) => {
+  //   const order = await Order.findOne({
+  //     where: { table_id: tableId, status: "en_cours" },
+  //   });
+  //   return !!order;
+  // };
 
   return (
     <div className="table-choice-container">
@@ -41,7 +70,9 @@ function TableChoice({ currentTable, onChangeTable }) {
             key={index}
             className={`table-circle ${
               currentTable === index + 1 ? "active" : ""
-            } ${isTableOpen(index + 1) ? "open" : ""}`}
+            } ${isTableOpen(index + 1) ? "open" : ""} ${
+              isTableEnCours(index + 1) ? "en-cours" : ""
+            }`}
             onClick={() => onChangeTable(index + 1)}
           >
             {index + 1}
@@ -59,6 +90,7 @@ function TableChoice({ currentTable, onChangeTable }) {
                   <li key={itemIndex}>
                     <p>Article: {item.itemTitle}</p>
                     <p>Quantité: {item.quantity}</p>
+                    <p>Prix: {item.price}</p>
                     {/* Ajoutez d'autres informations si nécessaire */}
                   </li>
                 ))}

@@ -33,6 +33,21 @@ const createOrder = async (req, res) => {
   }
 };
 
+const createKitchenOrder = async (req, res) => {
+  try {
+    const tableNumber = req.params.number;
+    const items = req.body.items; // Assuming you're sending items in the request body
+
+    // Your logic to create a kitchen order here
+
+    res.status(201).json({ message: "Kitchen order created successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating a kitchen order" });
+  }
+};
+
 module.exports = {
   getOrder,
   createOrder,

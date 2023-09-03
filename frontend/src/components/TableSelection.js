@@ -66,12 +66,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTableStatus } from "./TableContext";
 import "./TableSelection.css";
 
 function TableSelection() {
   const [tableNumber, setTableNumber] = useState("");
   const [totalCovers, setTotalCovers] = useState("");
   const navigate = useNavigate();
+
+  const { updateTableStatus } = useTableStatus();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,6 +87,9 @@ function TableSelection() {
       });
 
       console.log("Réponse du serveur:", response.data);
+
+      // Mettez à jour le statut de la table comme occupée
+      updateTableStatus(tableNumber, "occupied");
 
       // Réinitialisez les champs après l'enregistrement
       setTableNumber("");

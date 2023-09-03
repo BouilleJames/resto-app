@@ -85,26 +85,25 @@ function Dashboard() {
       })),
     }));
 
-    // Appelez l'API pour enregistrer la commande dans la base de données quand j'envoie un ticket en cuisine
-    axios
-      .post(`http://localhost:5000/api/orders/${selectedTable}`, {
+    try {
+      // Envoi du ticket de préparation à l'API
+      axios.post("http://localhost:5000/api/order_items", {
+        tableNumber: selectedTable,
         items: kitchenItems.map((cartItem) => ({
-          id: cartItem.id, // Ajoutez l'ID de l'article
+          itemId: cartItem.id,
           quantity: cartItem.quantity,
+          status: "en_cours",
         })),
-      })
-      .then((response) => {
-        console.log("Commande enregistrée en cuisine:", response.data);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'enregistrement de la commande:", error);
       });
 
-    // Supprimez les articles du panier des catégories 1 à 3
-    const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
+      // Suppression des articles du panier de la catégorie 1 à 3
+      const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
+      setCart(updatedCart);
 
-    // Mettez à jour le panier avec les articles restants
-    setCart(updatedCart);
+      console.log("Ticket de préparation envoyé avec succès.");
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du ticket de préparation :", error);
+    }
   };
 
   const generateBarTicket = () => {
@@ -122,24 +121,27 @@ function Dashboard() {
       })),
     }));
 
-    // Appelez l'API pour enregistrer la commande au bar dans la base de données
-    axios
-      .post("http://localhost:5000/api/orders", {
-        items: barItems,
+    try {
+      // Envoi du ticket de préparation au bar à l'API et stockage en base de données
+      axios.post("http://localhost:5000/api/order_items", {
         tableNumber: selectedTable,
-      })
-      .then((response) => {
-        console.log("Commande enregistrée au bar:", response.data);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'enregistrement de la commande:", error);
+        items: barItems.map((cartItem) => ({
+          itemId: cartItem.id,
+          quantity: cartItem.quantity,
+        })),
       });
 
-    // Supprimez les articles du panier de la catégorie 4
-    const updatedCart = cart.filter((cartItem) => cartItem.category_id < 4);
+      // Suppression des articles du panier de la catégorie 4
+      const updatedCart = cart.filter((cartItem) => cartItem.category_id < 4);
+      setCart(updatedCart);
 
-    // Mettez à jour le panier avec les articles restants
-    setCart(updatedCart);
+      console.log("Ticket de préparation au bar envoyé avec succès.");
+    } catch (error) {
+      console.error(
+        "Erreur lors de l'envoi du ticket de préparation au bar :",
+        error
+      );
+    }
   };
 
   return (
@@ -220,12 +222,22 @@ function Dashboard() {
             </li>
           ))}
         </ul>
-        <button className="generate-button" onClick={generateKitchenTicket}>
-          Générer Ticket Cuisine
-        </button>
-        <button className="generate-button" onClick={generateBarTicket}>
-          Générer Ticket Bar
-        </button>
+        <div className="ticket">
+          <button
+            id="generateTicket1"
+            className="generate-button"
+            onClick={generateKitchenTicket}
+          >
+            Générer Ticket Cuisine
+          </button>
+          <button
+            id="generateTicket2"
+            className="generate-button"
+            onClick={generateBarTicket}
+          >
+            Générer Ticket Bar
+          </button>
+        </div>
       </div>
       <TableOrders tableNumber={tableNumber} tableOrders={tableOrders} />{" "}
     </div>

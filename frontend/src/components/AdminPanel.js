@@ -11,14 +11,6 @@ const AdminPanel = ({ isAdmin }) => {
   const [error, setError] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  if (!isAdmin) {
-    return <div>Vous n'êtes pas autorisé à accéder à cette page.</div>;
-  }
-
   const fetchItems = async () => {
     try {
       const response = await axios.get("http://localhost:5000/items");
@@ -32,6 +24,14 @@ const AdminPanel = ({ isAdmin }) => {
       }
     }
   };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  if (!isAdmin) {
+    return <div>Vous n'êtes pas autorisé à accéder à cette page.</div>;
+  }
 
   const handleCreateItem = async () => {
     try {

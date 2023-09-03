@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/db");
+const OrderItem = require("./OrderItem");
 
 const KitchenItem = sequelize.define("kitchen_items", {
   id: {
