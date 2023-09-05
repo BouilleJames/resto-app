@@ -4,9 +4,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  width: 100%;
   box-sizing: border-box;
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 10%;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #d9d9d9;
 }
 
 .category-filter {
@@ -97,6 +103,8 @@ button:hover {
 /* Styling for the "Générer Ticket Cuisine" and "Générer Ticket Bar" buttons */
 .generate-button {
   background-color: #227636;
+  width: 130px;
+  height: 40px;
 }
 
 .generate-button:hover {
@@ -120,6 +128,21 @@ button:hover {
   .cart-section {
     width: 80%;
     margin: 10px 0;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+  .menu-section,
+  .cart-section {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .generate-button,
+  .generate-button:hover {
+    background-color: #227636;
   }
 }
 

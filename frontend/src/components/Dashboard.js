@@ -76,6 +76,8 @@ function Dashboard() {
       (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
     );
 
+    console.log("kitchenItems:", kitchenItems);
+
     // Mettez à jour l'état tableOrders avec les articles commandés
     setTableOrders((prevTableOrders) => ({
       ...prevTableOrders,
@@ -111,6 +113,8 @@ function Dashboard() {
 
     // Filtrer les articles du panier par catégories 4 (boissons)
     const barItems = cart.filter((cartItem) => cartItem.category_id === 4);
+
+    console.log("barItems:", barItems);
 
     // Mettez à jour l'état tableOrders avec les articles commandés
     setTableOrders((prevTableOrders) => ({
@@ -228,14 +232,14 @@ function Dashboard() {
             className="generate-button"
             onClick={generateKitchenTicket}
           >
-            Générer Ticket Cuisine
+            Ticket Cuisine
           </button>
           <button
             id="generateTicket2"
             className="generate-button"
             onClick={generateBarTicket}
           >
-            Générer Ticket Bar
+            Ticket Bar
           </button>
         </div>
       </div>

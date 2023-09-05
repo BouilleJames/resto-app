@@ -53,8 +53,11 @@ const login = async (req, res) => {
       { expiresIn: "8h" }
     );
 
+    console.log("Role:", user.role);
+
     res.status(200).json({ token });
   } catch (error) {
+    console.error("Erreur de connexion:", error);
     res.status(500).json({ error: "An error occurred during login" });
   }
 };

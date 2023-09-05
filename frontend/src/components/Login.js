@@ -20,8 +20,13 @@ function Login({ setIsLoggedIn, setIsAdmin }) {
 
       console.log("Réponse du serveur:", response.data);
 
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("role", response.data.role);
+
       setIsLoggedIn(true);
       setIsAdmin(response.data.role === "admin"); // Utilisation du rôle
+
+      console.log("Role:", response.data.role);
 
       if (response.data.role === "admin") {
         navigate("/adminPanel");

@@ -25,9 +25,9 @@ function TableOrders({ tableNumber }) {
     fetchTableOrders();
   }, [tableNumber]);
 
-  if (error) {
-    return <div>Erreur lors de la récupération des commandes de la table.</div>;
-  }
+  // if (error) {
+  //   return <div>Erreur lors de la récupération des commandes de la table.</div>;
+  // }
 
   return (
     <div className="table-orders-container">

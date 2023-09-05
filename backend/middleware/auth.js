@@ -79,7 +79,7 @@ module.exports = async (req, res, next) => {
         .json({ error: "Token d'authentification manquant" });
     }
 
-    const decodedToken = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decodedToken.userId;
 
     // Utilisation de Sequelize pour rechercher l'utilisateur

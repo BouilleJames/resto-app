@@ -4,9 +4,9 @@ import ItemForm from "./ItemForm";
 
 const AdminPanel = ({ isAdmin }) => {
   const [items, setItems] = useState([]);
-  const [title, setTitle] = useState(""); // Utilisation du hook useState ici
-  const [price, setPrice] = useState(""); // Utilisation du hook useState ici
-  const [category, setCategory] = useState(""); // Utilisation du hook useState ici
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -42,6 +42,8 @@ const AdminPanel = ({ isAdmin }) => {
         description: "Description de l'article",
       };
 
+      console.log("newItemData:", newItemData);
+
       await axios.post("http://localhost:5000/items", newItemData);
       setMessage("Article créé avec succès !");
       setError(""); // Réinitialise l'erreur si elle était précédemment affichée
@@ -68,8 +70,11 @@ const AdminPanel = ({ isAdmin }) => {
       // Mettre à jour les états avec les valeurs de l'article
       setTitle(selectedItem.title);
       setPrice(selectedItem.price);
-      console.log("selectedItem.price:", selectedItem.price);
       setCategory(selectedItem.category);
+
+      console.log("title:", selectedItem.title);
+      console.log("price:", selectedItem.price);
+      console.log("category:", selectedItem.category);
 
       const updatedItemData = {
         title: selectedItem.title,

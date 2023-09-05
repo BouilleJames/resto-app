@@ -34,14 +34,14 @@ function App() {
             }
           />
           <Route
-            path="/adminPanel"
-            element={isAdmin ? <AdminPanel /> : <Navigate to="/tableChoice" />}
-          />
-          <Route
             path="/"
             element={
               isLoggedIn ? (
-                <Navigate to="/adminPanel" />
+                isAdmin ? (
+                  <AdminPanel />
+                ) : (
+                  <Navigate to="/tableSelection" />
+                )
               ) : (
                 <Navigate to="/login" />
               )
@@ -56,6 +56,7 @@ function App() {
             path="/dashboard"
             element={<Navigate to="/tableSelection" />}
           />
+          <Route path="/adminPanel" element={<AdminPanel />} />
           <Route path="/tableOrders" element={<TableOrders />} />
           <Route path="/itemForm" element={<ItemForm />} />
           <Route path="/orderManagement" element={<OrderManagement />} />

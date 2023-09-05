@@ -3,17 +3,18 @@
 .table-selection-container {
   max-width: 400px;
   margin: 0 auto;
+  margin-top: 10%;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  background-color: #d9d9d9;
 }
 
 h2 {
   text-align: center;
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 form {
@@ -30,13 +31,14 @@ input[type="number"] {
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 3px;
+  border-radius: 10px;
   text-align: right; /* Align input text to the right */
 }
 
 .align {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 button[type="submit"] {
@@ -47,6 +49,9 @@ button[type="submit"] {
   border-radius: 3px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 160px;
+  margin: 0 auto;
+  display: block;
 }
 
 button[type="submit"]:hover {

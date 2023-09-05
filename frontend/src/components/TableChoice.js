@@ -3,7 +3,7 @@ import axios from "axios";
 import "./TableChoice.css";
 
 function TableChoice({ currentTable, onChangeTable }) {
-  const totalTables = 100; // Nombre total de tables
+  const totalTables = 36; // Nombre total de tables
   const [tableOrders, setTableOrders] = useState([]);
   const [tableStatus, setTableStatus] = useState({});
 

@@ -6,6 +6,23 @@ const itemsRoutes = require("./routes/items");
 const tablesRoutes = require("./routes/tables");
 const ordersRoutes = require("./routes/orders");
 const sequelize = require("./config/db");
+const https = require("https");
+const fs = require("fs");
+
+const privateKey = fs.readFileSync(
+  "./ssl/_.james-bouille.fr_private_key.key",
+  "utf8"
+);
+const certificate = fs.readFileSync(
+  "./ssl/_.james-bouille.fr_ssl_certificate.crt",
+  "utf8"
+);
+
+const httpsOptions = {
+  key: privateKey,
+  cert: certificate,
+  passphrase: "jamessemaj",
+};
 
 // Importez tous vos modèles ici
 const User = require("./models/User");
@@ -45,8 +62,10 @@ const port = process.env.PORT || 5000;
 sequelize
   .sync({ logging: console.log })
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
+    const httpsServer = https.createServer(httpsOptions, app);
+
+    httpsServer.listen(port, () => {
+      console.log(`Server is running on port ${port} (HTTPS)`);
     });
   })
   .catch((error) => {

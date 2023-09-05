@@ -105,18 +105,20 @@ function TableSelection() {
       <h2>Sélection de la Table</h2>
       <form onSubmit={handleSubmit}>
         <div className="align">
-          <label>Numéro de Table:</label>
+          <label htmlFor="tablenumber">Numéro de Table:</label>
           <input
             type="number"
+            id="tablenumber"
             value={tableNumber}
             onChange={(e) => setTableNumber(e.target.value)}
             required
           />
         </div>
         <div className="align">
-          <label>Nombre de Personnes:</label>
+          <label htmlFor="totalcovers">Nombre de Personnes:</label>
           <input
             type="number"
+            id="totalcovers"
             value={totalCovers}
             onChange={(e) => setTotalCovers(e.target.value)}
             required

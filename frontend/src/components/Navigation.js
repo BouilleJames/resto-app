@@ -7,7 +7,7 @@ function Navigation() {
     <nav>
       <ul>
         <li>
-          <Link to="/admin">Admin Panel</Link>
+          <Link to="/adminPanel">Admin Panel</Link>
         </li>
         <li>
           <Link to="/dashboard">Dashboard</Link>
