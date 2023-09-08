@@ -18,7 +18,7 @@ function TableChoice({ currentTable, onChangeTable }) {
   const fetchTableOrders = async (tableNumber) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/tables/${tableNumber}/orders`
+        `https://localhost:5000/api/tables/${tableNumber}/orders`
       );
       setTableOrders(response.data);
     } catch (error) {
@@ -32,7 +32,7 @@ function TableChoice({ currentTable, onChangeTable }) {
   const fetchTableStatus = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/tables/status"
+        "https://localhost:5000/api/tables/status"
       );
       setTableStatus(response.data);
     } catch (error) {

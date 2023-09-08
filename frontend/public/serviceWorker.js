@@ -4,9 +4,14 @@ var cacheFiles = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/favicon.ico",
-  "/logo192.png",
-  "/logo512.png",
+  "/icon-72x72.png",
+  "/icon-96x96.png",
+  "/icon-128x128.png",
+  "/icon-144x144.png",
+  "/icon-152x152.png",
+  "/icon-192x192.png",
+  "/icon-384x384.png",
+  "/icon-512x512.png",
   "/frontend/src/App.js",
   "/frontend/src/components/AdminPanel.js",
   "/frontend/src/components/Dashboard.js",
@@ -25,24 +30,24 @@ var cacheFiles = [
   // Ajoutez ici les chemins vers les fichiers statiques de votre application
 ];
 
-self.addEventListener("install", function (event) {
+self.addEventListener("install", function(event) {
   // Perform install steps
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function (cache) {
+    caches.open(CACHE_NAME).then(function(cache) {
       console.log("Opened cache");
       return cache.addAll(cacheFiles);
     })
   );
 });
 
-self.addEventListener("activate", function (event) {
+self.addEventListener("activate", function(event) {
   var cacheWhitelist = [CACHE_NAME];
 
   event.waitUntil(
     // Check de toutes les clés de cache.
-    caches.keys().then(function (cacheNames) {
+    caches.keys().then(function(cacheNames) {
       return Promise.all(
-        cacheNames.map(function (cacheName) {
+        cacheNames.map(function(cacheName) {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             return caches.delete(cacheName);
           }
@@ -53,14 +58,14 @@ self.addEventListener("activate", function (event) {
   );
 });
 
-self.addEventListener("fetch", function (event) {
+self.addEventListener("fetch", function(event) {
   // Ignorer les requêtes provenant de schémas non pris en charge
   if (event.request.url.startsWith("chrome-extension://")) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(function (response) {
+    caches.match(event.request).then(function(response) {
       // Cache hit - return response
       if (response) {
         return response;
@@ -71,15 +76,23 @@ self.addEventListener("fetch", function (event) {
       // Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
       var fetchRequest = event.request.clone();
 
-      return fetch(fetchRequest).then(function (response) {
+      return fetch(fetchRequest).then(function(response) {
         if (!response || response.status !== 200 || response.type !== "basic") {
-          return response;
+          caches
+            .match("/")
+            .then(function(response) {
+              console.log("response", response);
+              return response;
+            })
+            .catch(function(error) {
+              console.log("error", error);
+            });
         }
 
         // IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
         var responseToCache = response.clone();
 
-        caches.open(CACHE_NAME).then(function (cache) {
+        caches.open(CACHE_NAME).then(function(cache) {
           cache.put(event.request, responseToCache);
         });
 

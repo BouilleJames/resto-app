@@ -81,7 +81,7 @@ function TableSelection() {
 
     try {
       // Envoyez les données au serveur pour enregistrement dans la base de données
-      const response = await axios.post("http://localhost:5000/api/tables", {
+      const response = await axios.post("https://localhost:5000/api/tables", {
         tableNumber,
         totalCovers,
       });

@@ -11,57 +11,53 @@ import TableOrders from "./components/TableOrders";
 import ItemForm from "./components/ItemForm";
 import TableChoice from "./components/TableChoice";
 import OrderManagement from "./components/OrderManagement";
-import { TableProvider } from "./components/TableContext";
+import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState();
   const [user, setUser] = useState(null);
 
   const handleLogout = () => {
     setUser(null);
   };
+  console.log(isLoggedIn);
 
   return (
     <div className="App">
-      <TableProvider>
-        <Navigation user={user} handleLogout={handleLogout} />
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <Login setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />
-            }
-          />
-          <Route
-            path="/"
-            element={
-              isLoggedIn ? (
-                isAdmin ? (
-                  <AdminPanel />
-                ) : (
-                  <Navigate to="/tableSelection" />
-                )
+      <Navigation user={user} handleLogout={handleLogout} />
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <Login setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            isLoggedIn ? (
+              isAdmin ? (
+                <AdminPanel />
               ) : (
-                <Navigate to="/login" />
+                <Navigate to="/tableSelection" />
               )
-            }
-          />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/registerForm" element={<RegisterForm />} />
-          <Route path="/tableSelection" element={<TableSelection />} />
-          <Route path="/tableChoice" element={<TableChoice />} />
-          <Route path="/dashboard/:tableNumber" element={<Dashboard />} />
-          <Route
-            path="/dashboard"
-            element={<Navigate to="/tableSelection" />}
-          />
-          <Route path="/adminPanel" element={<AdminPanel />} />
-          <Route path="/tableOrders" element={<TableOrders />} />
-          <Route path="/itemForm" element={<ItemForm />} />
-          <Route path="/orderManagement" element={<OrderManagement />} />
-        </Routes>
-      </TableProvider>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/registerForm" element={<RegisterForm />} />
+        <Route path="/tableSelection" element={<TableSelection />} />
+        <Route path="/tableChoice" element={<TableChoice />} />
+        <Route path="/dashboard/:tableNumber" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Navigate to="/tableSelection" />} />
+        <Route path="/adminPanel" element={<AdminPanel />} />
+        <Route path="/tableOrders" element={<TableOrders />} />
+        <Route path="/itemForm" element={<ItemForm />} />
+        <Route path="/orderManagement" element={<OrderManagement />} />
+      </Routes>
     </div>
   );
 }

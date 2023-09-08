@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TableChoice from "./TableChoice";
 import OrderList from "./OrderList";
 import axios from "axios";
+import "./OrderManagement.css";
 
 function OrderManagement() {
   const [selectedTable, setSelectedTable] = useState(null);
@@ -16,7 +17,7 @@ function OrderManagement() {
     try {
       // Envoyez une requête au serveur pour demander l'addition
       const response = await axios.post(
-        `http://localhost:5000/api/tables/${tableNumber}/checkout`
+        `https://localhost:5000/api/tables/${tableNumber}/checkout`
       );
 
       // Traitez la réponse du serveur (peut inclure le montant total, etc.)

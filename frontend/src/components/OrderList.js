@@ -12,7 +12,7 @@ function OrderList({ tableNumber }) {
   const fetchOrders = async (tableNumber) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/tables/${tableNumber}/orders`
+        `https://localhost:5000/api/tables/${tableNumber}/orders`
       );
       setOrders(response.data);
     } catch (error) {

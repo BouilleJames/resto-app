@@ -15,7 +15,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/items");
+        const response = await axios.get("https://localhost:5000/items");
         setItems(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des articles:", error);
@@ -25,7 +25,7 @@ function Dashboard() {
     const fetchTableOrders = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/tables/${tableNumber}/orders`
+          `https://localhost:5000/api/tables/${tableNumber}/orders`
         );
         setTableOrders(response.data);
       } catch (error) {
@@ -89,7 +89,7 @@ function Dashboard() {
 
     try {
       // Envoi du ticket de préparation à l'API
-      axios.post("http://localhost:5000/api/order_items", {
+      axios.post("https://localhost:5000/api/order_items", {
         tableNumber: selectedTable,
         items: kitchenItems.map((cartItem) => ({
           itemId: cartItem.id,
@@ -127,7 +127,7 @@ function Dashboard() {
 
     try {
       // Envoi du ticket de préparation au bar à l'API et stockage en base de données
-      axios.post("http://localhost:5000/api/order_items", {
+      axios.post("https://localhost:5000/api/order_items", {
         tableNumber: selectedTable,
         items: barItems.map((cartItem) => ({
           itemId: cartItem.id,

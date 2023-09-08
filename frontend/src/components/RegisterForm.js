@@ -13,7 +13,7 @@ const RegisterForm = () => {
       console.log("Submitting registration form...");
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        "https://localhost:5000/api/auth/register",
         {
           login: login,
           password: password,

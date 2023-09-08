@@ -14,7 +14,7 @@ function ForgotPassword() {
     try {
       // Envoyer la demande de réinitialisation du mot de passe au serveur
       const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
+        "https://localhost:5000/api/auth/forgot-password",
         { email }
       );
 

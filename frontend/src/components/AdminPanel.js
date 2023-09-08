@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ItemForm from "./ItemForm";
 
-const AdminPanel = ({ isAdmin }) => {
+const AdminPanel = () => {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -13,7 +13,7 @@ const AdminPanel = ({ isAdmin }) => {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/items");
+      const response = await axios.get("https://localhost:5000/items");
       // console.table(response.data);
       setItems(response.data);
     } catch (error) {
@@ -28,6 +28,8 @@ const AdminPanel = ({ isAdmin }) => {
   useEffect(() => {
     fetchItems();
   }, []);
+
+  const isAdmin = localStorage.getItem("role");
 
   if (!isAdmin) {
     return <div>Vous n'êtes pas autorisé à accéder à cette page.</div>;
