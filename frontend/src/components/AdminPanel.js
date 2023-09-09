@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ItemForm from "./ItemForm";
+import "./AdminPanel.css";
 
 const AdminPanel = () => {
   const [items, setItems] = useState([]);
@@ -47,7 +48,7 @@ const AdminPanel = () => {
 
       console.log("newItemData:", newItemData);
 
-      await axios.post("http://localhost:5000/items", newItemData);
+      await axios.post("https://localhost:5000/items", newItemData);
       setMessage("Article créé avec succès !");
       setError(""); // Réinitialise l'erreur si elle était précédemment affichée
       setTitle(""); // Réinitialise les champs
@@ -72,7 +73,7 @@ const AdminPanel = () => {
 
       // Mettre à jour les états avec les valeurs de l'article
       setTitle(selectedItem.title);
-      setPrice(selectedItem.price);
+      setPrice(parseFloat(selectedItem.price));
       setCategory(selectedItem.category);
 
       console.log("title:", selectedItem.title);
@@ -83,11 +84,10 @@ const AdminPanel = () => {
         title: selectedItem.title,
         price: parseFloat(selectedItem.price), // Convertir en nombre décimal
         category_id: selectedItem.category,
-        description: selectedItem.description,
       };
       console.log("updatedItemData:", updatedItemData);
 
-      await axios.put(`http://localhost:5000/items/${id}`, updatedItemData);
+      await axios.put(`https://localhost:5000/items/${id}`, updatedItemData);
       setMessage("Article modifié avec succès !");
       setError("");
       fetchItems();
@@ -102,7 +102,7 @@ const AdminPanel = () => {
 
   const handleDeleteItem = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/items/${id}`);
+      await axios.delete(`https://localhost:5000/items/${id}`);
       setMessage("Article supprimé avec succès !");
       setError("");
       fetchItems();
@@ -126,12 +126,6 @@ const AdminPanel = () => {
       <div className="admin-panel-header">
         <h2>Admin Panel</h2>
         <div className="category-filter">
-          <button
-            onClick={() => handleFilterByCategory(null)}
-            className={selectedCategory === null ? "active" : ""}
-          >
-            Tous
-          </button>
           <button
             onClick={() => handleFilterByCategory(1)}
             className={selectedCategory === 1 ? "active" : ""}
@@ -161,19 +155,19 @@ const AdminPanel = () => {
       <ul className="admin-item-list">
         {filteredItems.map((item) => (
           <li key={item.id} className="admin-item">
+            <button
+              className="admin-button edit-button"
+              onClick={() => handleEditItem(item.id)}
+            >
+              <span role="img" aria-label="Modifier">
+                &#9997;
+              </span>
+            </button>
             <div className="admin-item-info">
               <span className="admin-item-title">{item.title}</span>
               <span className="admin-item-price"> €{item.price}</span>
             </div>
             <div className="admin-item-buttons">
-              <button
-                className="admin-button edit-button"
-                onClick={() => handleEditItem(item.id)}
-              >
-                <span role="img" aria-label="Modifier">
-                  &#9997;
-                </span>
-              </button>
               <button
                 className="admin-button delete-button"
                 onClick={() => handleDeleteItem(item.id)}

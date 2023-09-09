@@ -35,10 +35,9 @@ const ItemForm = ({
           type="number"
           className="admin-form-input"
           value={price}
-          onChange={(e) => {
-            const newValue = Math.max(0, e.target.value);
-            setPrice(newValue);
-          }}
+          onChange={(e) => setPrice(Math.max(0, parseFloat(e.target.value)))}
+          min="0" // Empêche les valeurs négatives
+          step="0.01" // Permet de régler le prix de centime en centime
           required
         />
         <label className="admin-form-label">Catégorie:</label>
