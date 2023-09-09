@@ -3,6 +3,7 @@ import React from "react";
 import "./ItemForm.css";
 
 const ItemForm = ({
+  formTitle,
   handleCreateOrUpdateItem,
   title,
   setTitle,
@@ -18,7 +19,7 @@ const ItemForm = ({
   const buttonText = isEditing ? "Modifier" : "Créer"; // Texte du bouton
   return (
     <div className="admin-form-container">
-      <h3>Formulaire de création d'article</h3>
+      <h3>{formTitle}</h3>
       {message && <p className="admin-message success-message">{message}</p>}
       {error && <p className="admin-message error-message">{error}</p>}
       <form className="admin-form" onSubmit={handleCreateOrUpdateItem}>

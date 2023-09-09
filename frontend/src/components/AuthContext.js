@@ -22,6 +22,7 @@ export default function AuthProvider({ children }) {
     setUserRole(null); // Réinitialiser le rôle de l'utilisateur lors de la déconnexion
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    window.location.href = "/login";
   }
 
   const value = {

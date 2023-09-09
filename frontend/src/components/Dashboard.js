@@ -68,43 +68,49 @@ function Dashboard() {
     setCart(updatedCart.filter((cartItem) => cartItem.quantity > 0));
   };
 
-  const generateKitchenTicket = () => {
-    console.log(`Kitchen Ticket Generated for Table: {tableNumber}`);
-
-    // Filtrer les articles du panier par catégories 1 à 3
-    const kitchenItems = cart.filter(
-      (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
-    );
-
-    console.log("kitchenItems:", kitchenItems);
-
-    // Mettez à jour l'état tableOrders avec les articles commandés
-    setTableOrders((prevTableOrders) => ({
-      ...prevTableOrders,
-      [selectedTable]: kitchenItems.map((cartItem) => ({
-        id: cartItem.id, // Ajoutez l'ID de l'article
-        quantity: cartItem.quantity,
-      })),
-    }));
-
+  const generateKitchenTicket = async () => {
     try {
-      // Envoi du ticket de préparation à l'API
-      axios.post("https://localhost:5000/api/order_items", {
-        tableNumber: selectedTable,
-        items: kitchenItems.map((cartItem) => ({
-          itemId: cartItem.id,
-          quantity: cartItem.quantity,
-          status: "en_cours",
-        })),
-      });
+      // Filtrer les articles du panier par catégories 1 à 3
+      // const kitchenItems = cart.filter(
+      //   (cartItem) => cartItem.category_id >= 1 && cartItem.category_id <= 3
+      // );
 
-      // Suppression des articles du panier de la catégorie 1 à 3
-      const updatedCart = cart.filter((cartItem) => cartItem.category_id > 3);
-      setCart(updatedCart);
+      // Générer le PDF du ticket de cuisine ici
+      // Remarque : Vous devez implémenter la génération PDF
 
-      console.log("Ticket de préparation envoyé avec succès.");
+      // Envoyer le PDF par SMS en utilisant l'API Twilio
+      const smsData = {
+        To: "NUMÉRO_DU_CUISINIER", // Remplacez par le numéro du destinataire
+        From: "VOTRE_NUMÉRO_TWILIO",
+        Body: "Nouvelle commande de cuisine avec la pièce jointe PDF.",
+      };
+
+      const formData = new FormData();
+      formData.append("To", smsData.To);
+      formData.append("From", smsData.From);
+      formData.append("Body", smsData.Body);
+      formData.append("MediaUrl0", "URL_DU_PDF_AVEC_LE_TICKET_DE_CUISINE.pdf"); // Remplacez par l'URL de votre PDF
+
+      await axios.post(
+        "https://api.twilio.com/2010-04-01/Accounts/VOTRE_COMPTE_TWILIO/Messages.json",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          auth: {
+            username: "VOTRE_TWILIO_ACCOUNT_SID",
+            password: "VOTRE_TWILIO_AUTH_TOKEN",
+          },
+        }
+      );
+
+      console.log("Ticket de cuisine généré et envoyé avec succès.");
     } catch (error) {
-      console.error("Erreur lors de l'envoi du ticket de préparation :", error);
+      console.error(
+        "Erreur lors de la génération et de l'envoi du ticket de cuisine :",
+        error
+      );
     }
   };
 

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ItemForm from "./ItemForm";
+import jwt from "jsonwebtoken";
 import "./AdminPanel.css";
 
 const AdminPanel = () => {
   const [items, setItems] = useState([]);
+  const [form, setForm] = useState(false);
+  const [formTitle, setFormTitle] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
@@ -12,6 +15,16 @@ const AdminPanel = () => {
   const [error, setError] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const { role, setRole } = useState("");
+  const authToken = localStorage.getItem("token");
+
+  useEffect(() => {
+    fetchItems();
+    if (authToken) {
+      const decodedToken = jwt.decode(authToken);
+      setRole(decodedToken.role);
+    }
+  }, [authToken]);
 
   const fetchItems = async () => {
     try {
@@ -27,13 +40,7 @@ const AdminPanel = () => {
     }
   };
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const isAdmin = localStorage.getItem("role");
-
-  if (!isAdmin) {
+  if (role !== "admin") {
     return <div>Vous n'êtes pas autorisé à accéder à cette page.</div>;
   }
 
@@ -56,6 +63,7 @@ const AdminPanel = () => {
       setCategory("");
       // setSelectedItemId(null);
       fetchItems(); // Met à jour la liste des articles
+      setForm(false);
     } catch (error) {
       setError("Erreur lors de la création de l'article.");
       setMessage(""); // Réinitialise le message si une erreur est survenue
@@ -63,29 +71,16 @@ const AdminPanel = () => {
     }
   };
 
-  const handleEditItem = async (id) => {
+  const handleEditItem = async (item) => {
     try {
-      setSelectedItemId(id);
-
-      // Trouver l'article correspondant dans la liste
-      const selectedItem = items.find((item) => item.id === id);
-      console.log("selectedItem:", selectedItem);
-
-      // Mettre à jour les états avec les valeurs de l'article
-      setTitle(selectedItem.title);
-      setPrice(parseFloat(selectedItem.price));
-      setCategory(selectedItem.category);
-
-      console.log("title:", selectedItem.title);
-      console.log("price:", selectedItem.price);
-      console.log("category:", selectedItem.category);
+      const id = selectedItemId;
 
       const updatedItemData = {
-        title: selectedItem.title,
-        price: parseFloat(selectedItem.price), // Convertir en nombre décimal
-        category_id: selectedItem.category,
+        title: item.title,
+        price: parseFloat(item.price), // Convertir en nombre décimal
+        category_id: item.category,
+        updatedAt: new Date(),
       };
-      console.log("updatedItemData:", updatedItemData);
 
       await axios.put(`https://localhost:5000/items/${id}`, updatedItemData);
       setMessage("Article modifié avec succès !");
@@ -93,6 +88,7 @@ const AdminPanel = () => {
       fetchItems();
 
       setSelectedItemId(null); // Réinitialise l'état pour indiquer que vous n'êtes plus en mode édition
+      setForm(false);
     } catch (error) {
       setError("Erreur lors de la modification de l'article.");
       setMessage("");
@@ -115,6 +111,23 @@ const AdminPanel = () => {
 
   const handleFilterByCategory = (categoryId) => {
     setSelectedCategory(categoryId);
+  };
+
+  const handleForm = (item) => {
+    setForm(true);
+    if (item) {
+      setFormTitle("Formulaire de modification d'article");
+      setSelectedItemId(item.id);
+      setTitle(item.title);
+      setPrice(item.price);
+      setCategory(item.category_id);
+    } else {
+      setFormTitle("Formulaire de création d'article");
+    }
+  };
+
+  const handleFormSubmit = (itemData) => {
+    selectedItemId ? handleEditItem(itemData) : handleCreateItem(itemData);
   };
 
   const filteredItems = selectedCategory
@@ -157,7 +170,7 @@ const AdminPanel = () => {
           <li key={item.id} className="admin-item">
             <button
               className="admin-button edit-button"
-              onClick={() => handleEditItem(item.id)}
+              onClick={() => handleForm(item)}
             >
               <span role="img" aria-label="Modifier">
                 &#9997;
@@ -180,20 +193,37 @@ const AdminPanel = () => {
           </li>
         ))}
       </ul>
-      <ItemForm
-        title={title}
-        setTitle={setTitle}
-        price={price}
-        setPrice={setPrice}
-        category={category}
-        setCategory={setCategory}
-        message={message}
-        error={error}
-        handleCreateOrUpdateItem={
-          selectedItemId !== null ? handleEditItem : handleCreateItem
-        }
-        selectedItemId={selectedItemId}
-      />
+      <button
+        className="admin-button delete-button"
+        onClick={() => handleForm()}
+      >
+        <span role="img" aria-label="Effacer">
+          Créer un nouvel article
+        </span>
+      </button>
+      <>
+        {form && (
+          <ItemForm
+            formTitle={formTitle}
+            title={title}
+            setTitle={setTitle}
+            price={price}
+            setPrice={setPrice}
+            category={category}
+            setCategory={setCategory}
+            message={message}
+            error={error}
+            handleCreateOrUpdateItem={() =>
+              handleFormSubmit({
+                title,
+                price,
+                category,
+              })
+            }
+            selectedItemId={selectedItemId}
+          />
+        )}
+      </>
     </div>
   );
 };

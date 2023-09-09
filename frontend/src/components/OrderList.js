@@ -34,7 +34,7 @@ function OrderList({ tableNumber }) {
                 <li key={itemIndex}>
                   <p>Article: {item.itemTitle}</p>
                   <p>Quantité: {item.quantity}</p>
-                  {/* Ajoutez d'autres informations si nécessaire */}
+                  <p>Prix: {item.itemPrice} </p>
                 </li>
               ))}
             </ul>
