@@ -10,6 +10,7 @@ const AdminPanel = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const fetchItems = async () => {
     try {
@@ -112,13 +113,53 @@ const AdminPanel = () => {
     }
   };
 
+  const handleFilterByCategory = (categoryId) => {
+    setSelectedCategory(categoryId);
+  };
+
+  const filteredItems = selectedCategory
+    ? items.filter((item) => item.category_id === selectedCategory)
+    : items;
+
   return (
     <div className="admin-panel-container">
       <div className="admin-panel-header">
         <h2>Admin Panel</h2>
+        <div className="category-filter">
+          <button
+            onClick={() => handleFilterByCategory(null)}
+            className={selectedCategory === null ? "active" : ""}
+          >
+            Tous
+          </button>
+          <button
+            onClick={() => handleFilterByCategory(1)}
+            className={selectedCategory === 1 ? "active" : ""}
+          >
+            Entrées
+          </button>
+          <button
+            onClick={() => handleFilterByCategory(2)}
+            className={selectedCategory === 2 ? "active" : ""}
+          >
+            Plats
+          </button>
+          <button
+            onClick={() => handleFilterByCategory(3)}
+            className={selectedCategory === 3 ? "active" : ""}
+          >
+            Desserts
+          </button>
+          <button
+            onClick={() => handleFilterByCategory(4)}
+            className={selectedCategory === 4 ? "active" : ""}
+          >
+            Boissons
+          </button>
+        </div>
       </div>
       <ul className="admin-item-list">
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <li key={item.id} className="admin-item">
             <div className="admin-item-info">
               <span className="admin-item-title">{item.title}</span>

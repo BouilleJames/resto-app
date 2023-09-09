@@ -81,6 +81,7 @@ module.exports = async (req, res, next) => {
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decodedToken.userId;
+    const userRole = decodedToken.role;
 
     // Utilisation de Sequelize pour rechercher l'utilisateur
     const user = await sequelize.models.User.findByPk(userId);
@@ -89,7 +90,7 @@ module.exports = async (req, res, next) => {
       return res.status(401).json({ error: "Utilisateur non trouvé" });
     }
 
-    req.auth = { userId: user.id };
+    req.auth = { userId: user.id, userRole: userRole };
     next();
   } catch (error) {
     res.status(401).json({ error: error.message });
