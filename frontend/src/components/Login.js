@@ -25,13 +25,13 @@ function Login() {
         }
       );
 
+      console.log(response);
+
       const decodedToken = jwt.decode(response.data.token);
       const role = decodedToken.role;
+      const token = response.data.token;
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("role", role);
-
-      authLogin(response.data.token);
+      authLogin(token, role);
 
       if (role === "admin") {
         navigate("/adminPanel");

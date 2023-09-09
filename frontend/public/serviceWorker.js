@@ -1,106 +1,107 @@
-/* eslint-disable no-restricted-globals */
-var CACHE_NAME = "resto-app-cache-v1";
-var cacheFiles = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/icon-72x72.png",
-  "/icon-96x96.png",
-  "/icon-128x128.png",
-  "/icon-144x144.png",
-  "/icon-152x152.png",
-  "/icon-192x192.png",
-  "/icon-384x384.png",
-  "/icon-512x512.png",
-  "/frontend/src/App.js",
-  "/frontend/src/components/AdminPanel.js",
-  "/frontend/src/components/Dashboard.js",
-  "/frontend/src/components/ForgotPassword.js",
-  "/frontend/src/components/ItemForm.js",
-  "/frontend/src/components/Login.js",
-  "/frontend/src/components/Navigation.js",
-  "/frontend/src/components/OrderManagement.js",
-  "/frontend/src/components/RegisterForm.js",
-  "/frontend/src/components/TableChoice.js",
-  "/frontend/src/components/TableContext.js",
-  "/frontend/src/components/TableOrders.js",
-  "/frontend/src/components/TableSelection.js",
-  "/frontend/src/index.css",
-  "/frontend/src/index.js",
-  // Ajoutez ici les chemins vers les fichiers statiques de votre application
-];
+// /* eslint-disable no-restricted-globals */
+// var CACHE_NAME = "resto-app-cache-v1";
+// var cacheFiles = [
+//   "/",
+//   "/index.html",
+//   "/manifest.json",
+//   "/icon-72x72.png",
+//   "/icon-96x96.png",
+//   "/icon-128x128.png",
+//   "/icon-144x144.png",
+//   "/icon-152x152.png",
+//   "/icon-192x192.png",
+//   "/icon-384x384.png",
+//   "/icon-512x512.png",
+//   "/frontend/src/App.js",
+//   "/frontend/src/components/AdminPanel.js",
+//   "/frontend/src/components/Dashboard.js",
+//   "/frontend/src/components/ForgotPassword.js",
+//   "/frontend/src/components/ItemForm.js",
+//   "/frontend/src/components/Login.js",
+//   "/frontend/src/components/Navigation.js",
+//   "/frontend/src/components/OrderManagement.js",
+//   "/frontend/src/components/RegisterForm.js",
+//   "/frontend/src/components/TableChoice.js",
+//   "/frontend/src/components/TableContext.js",
+//   "/frontend/src/components/TableOrders.js",
+//   "/frontend/src/components/TableSelection.js",
+//   "/frontend/src/index.css",
+//   "/frontend/src/index.js",
+//   // Ajoutez ici les chemins vers les fichiers statiques de votre application
+// ];
 
-self.addEventListener("install", function(event) {
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      console.log("Opened cache");
-      return cache.addAll(cacheFiles);
-    })
-  );
-});
+// self.addEventListener("install", function(event) {
+//   // Perform install steps
+//   event.waitUntil(
+//     caches.open(CACHE_NAME).then(function(cache) {
+//       console.log("Opened cache");
+//       return cache.addAll(cacheFiles);
+//     })
+//   );
+// });
 
-self.addEventListener("activate", function(event) {
-  var cacheWhitelist = [CACHE_NAME];
+// self.addEventListener("activate", function(event) {
+//   var cacheWhitelist = [CACHE_NAME];
 
-  event.waitUntil(
-    // Check de toutes les clés de cache.
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-          return cacheName;
-        })
-      );
-    })
-  );
-});
+//   event.waitUntil(
+//     // Check de toutes les clés de cache.
+//     caches.keys().then(function(cacheNames) {
+//       return Promise.all(
+//         cacheNames.map(function(cacheName) {
+//           if (cacheWhitelist.indexOf(cacheName) === -1) {
+//             return caches.delete(cacheName);
+//           }
+//           return cacheName;
+//         })
+//       );
+//     })
+//   );
+// });
 
-self.addEventListener("fetch", function(event) {
-  // Ignorer les requêtes provenant de schémas non pris en charge
-  if (event.request.url.startsWith("chrome-extension://")) {
-    return;
-  }
+// self.addEventListener("fetch", function(event) {
+//   // Ignorer les requêtes provenant de schémas non pris en charge
+//   if (event.request.url.startsWith("chrome-extension://")) {
+//     return;
+//   }
 
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      // Cache hit - return response
-      if (response) {
-        return response;
-      }
+//   event.respondWith(
+//     caches.match(event.request).then(function(response) {
+//       // Cache hit - return response
+//       if (response) {
+//         return response;
+//       }
 
-      // IMPORTANT: Cloner la requête.
-      // Une requete est un flux et est à consommation unique
-      // Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
-      var fetchRequest = event.request.clone();
+//       // IMPORTANT: Cloner la requête.
+//       // Une requete est un flux et est à consommation unique
+//       // Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
+//       var fetchRequest = event.request.clone();
 
-      return fetch(fetchRequest).then(function(response) {
-        if (!response || response.status !== 200 || response.type !== "basic") {
-          caches
-            .match("/")
-            .then(function(response) {
-              console.log("response", response);
-              return response;
-            })
-            .catch(function(error) {
-              console.log("error", error);
-            });
-        }
+//       return fetch(fetchRequest).then(function(response) {
+//         if (!response || response.status !== 200 || response.type !== "basic") {
+//           caches
+//             .match("/")
+//             .then(function(response) {
+//               console.log("response", response);
+//               return response;
+//             })
+//             .catch(function(error) {
+//               console.log("error", error);
+//             });
+//         }
 
-        // IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
-        var responseToCache = response.clone();
+//         // IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
+//         var responseToCache = response.clone();
 
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, responseToCache);
-        });
+//         caches.open(CACHE_NAME).then(function(cache) {
+//           cache.put(event.request, responseToCache);
+//         });
 
-        return response;
-      });
-    })
-  );
-});
+//         return response;
+//       });
+//     })
+//   );
+// });
+// ---------------------------------------------------------------------------
 
 // const staticCacheName = "static-cache-v1";
 // const assets = ["/", "/index.html"];

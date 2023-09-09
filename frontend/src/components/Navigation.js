@@ -13,7 +13,7 @@ const handleClick = () => {
 
 function Navigation() {
   const { isLoggedIn, isAdmin } = useAuth();
-
+  console.log("test :", isLoggedIn);
   return (
     <nav>
       <ul>

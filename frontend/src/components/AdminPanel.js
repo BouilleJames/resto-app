@@ -129,13 +129,17 @@ const AdminPanel = () => {
                 className="admin-button edit-button"
                 onClick={() => handleEditItem(item.id)}
               >
-                Modifier{item.id}
+                <span role="img" aria-label="Modifier">
+                  &#9997;
+                </span>
               </button>
               <button
                 className="admin-button delete-button"
                 onClick={() => handleDeleteItem(item.id)}
               >
-                Supprimer
+                <span role="img" aria-label="Effacer">
+                  &#128465;
+                </span>
               </button>
             </div>
           </li>
