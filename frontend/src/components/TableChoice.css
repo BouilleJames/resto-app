@@ -29,6 +29,13 @@
   transform: scale(1.1); /* Légèrement agrandi au survol */
 }
 
+/* Style pour les tables occupées */
+.table-circle.en-cours {
+  width: 50px;
+  height: 50px;
+  background-color: red;
+}
+
 .table-orders {
   margin-top: 20px;
   text-align: center;

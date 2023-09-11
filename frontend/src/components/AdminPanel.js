@@ -15,7 +15,7 @@ const AdminPanel = () => {
   const [error, setError] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { role, setRole } = useState("");
+  const [role, setRole] = useState("");
   const authToken = localStorage.getItem("token");
 
   useEffect(() => {

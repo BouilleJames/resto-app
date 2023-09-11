@@ -29,7 +29,7 @@ const OrderItem = sequelize.define("order_items", {
     allowNull: false,
   },
   status: {
-    type: Sequelize.ENUM("en_cours", "prete", "annulee"),
+    type: Sequelize.ENUM("en_cours", "terminee", "annulee"),
     allowNull: false,
     defaultValue: "en_cours",
   },

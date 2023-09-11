@@ -11,6 +11,23 @@ const getTables = async (req, res) => {
   }
 };
 
+const getTableStatus = async (req, res) => {
+  try {
+    const [tableStatus] = await sequelize.query(
+      "SELECT tableNumber, status FROM tables"
+    );
+    const statusMap = {};
+    tableStatus.forEach((table) => {
+      statusMap[table.tableNumber] = table.status;
+    });
+    res.status(200).json(statusMap);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching table status" });
+  }
+};
+
 const getOrdersByTable = async (req, res) => {
   try {
     const tableId = req.params.tableId;
@@ -73,4 +90,5 @@ module.exports = {
   createTable,
   updateTable,
   deleteTable,
+  getTableStatus,
 };

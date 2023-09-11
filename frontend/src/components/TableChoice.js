@@ -1,19 +1,35 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./TableChoice.css";
+import { useTableStatus } from "./TableContext"; // Importez le crochet useTableStatus
+import StateTable from "./StateTable";
+
+export function isTableOpen(tableNumber, tableOrders) {
+  // const openOrder = tableOrders.find(
+  //   (order) => order.table_id === tableNumber && order.status === "en_cours"
+  // );
+  const openOrder = "en_cours";
+  return openOrder;
+}
 
 function TableChoice({ currentTable, onChangeTable }) {
   const totalTables = 36; // Nombre total de tables
   const [tableOrders, setTableOrders] = useState([]);
-  const [tableStatus, setTableStatus] = useState({});
+  const [localTableStatus, setLocalTableStatus] = useState({}); // Renommez la variable locale
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tableNumber, setTableNumber] = useState();
+  const {
+    tableStatus: contextTableStatus,
+    updateTableStatus,
+  } = useTableStatus(); // Utilisez le contexte pour obtenir le statut des tables
 
-  useEffect(() => {
-    // Récupérer les commandes de la table actuelle depuis l'API
-    fetchTableOrders(currentTable);
+  // useEffect(() => {
+  //   // Récupérer les commandes de la table actuelle depuis l'API
+  //   fetchTableOrders(currentTable);
 
-    // Récupérer le statut de toutes les tables
-    fetchTableStatus();
-  }, [currentTable]);
+  //   // Récupérer le statut de toutes les tables
+  //   fetchTableStatus();
+  // }, [currentTable]);
 
   const fetchTableOrders = async (tableNumber) => {
     try {
@@ -34,7 +50,7 @@ function TableChoice({ currentTable, onChangeTable }) {
       const response = await axios.get(
         "https://localhost:5000/api/tables/status"
       );
-      setTableStatus(response.data);
+      setLocalTableStatus(response.data); // Utilisez la variable locale renommée
     } catch (error) {
       console.error(
         "Erreur lors de la récupération du statut des tables:",
@@ -43,23 +59,15 @@ function TableChoice({ currentTable, onChangeTable }) {
     }
   };
 
-  const isTableOpen = (tableNumber) => {
-    const openOrder = tableOrders.find(
-      (order) => order.table_id === tableNumber && order.status === "en_cours"
-    );
-    return openOrder;
-  };
-
   const isTableEnCours = (tableNumber) => {
-    return tableStatus[tableNumber] === "en_cours";
+    return localTableStatus[tableNumber] === "en_cours"; // Utilisez la variable locale renommée
   };
 
-  // const isTableEnCours = async (tableId) => {
-  //   const order = await Order.findOne({
-  //     where: { table_id: tableId, status: "en_cours" },
-  //   });
-  //   return !!order;
-  // };
+  const handleTableClick = (tableNumber) => {
+    setTableNumber(tableNumber);
+    // Ouvrir la modal au clic sur une table
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="table-choice-container">
@@ -71,9 +79,12 @@ function TableChoice({ currentTable, onChangeTable }) {
             className={`table-circle ${
               currentTable === index + 1 ? "active" : ""
             } ${isTableOpen(index + 1) ? "open" : ""} ${
-              isTableEnCours(index + 1) ? "en-cours" : ""
-            }`}
-            onClick={() => onChangeTable(index + 1)}
+              tableOrders.find((order) => order.table_id === index + 1)
+                ? "occupied"
+                : ""
+            } ${isTableEnCours(index + 1) ? "en-cours" : ""}`}
+            onClick={() => handleTableClick(index + 1)}
+            // onClick={() => onChangeTable(index + 1)}
           >
             {index + 1}
           </div>
@@ -99,6 +110,13 @@ function TableChoice({ currentTable, onChangeTable }) {
           ))}
         </ul>
       </div>
+      {/* Afficher la modal StateTable si isModalOpen est true */}
+      {isModalOpen && (
+        <StateTable
+          tableNumber={tableNumber}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

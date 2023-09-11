@@ -6,7 +6,7 @@ import "./Navigation.css";
 
 function Navigation() {
   const { isLoggedIn, isAdmin, logout } = useAuth();
-  const { role, setRole } = useState("");
+  const [role, setRole] = useState("");
   const authToken = localStorage.getItem("token");
 
   useEffect(() => {
@@ -27,6 +27,9 @@ function Navigation() {
         <>
           <li>
             <Link to="/dashboard">Dashboard</Link>
+          </li>
+          <li>
+            <Link to="/tableSelection">Créer Table</Link>
           </li>
           <li>
             <Link to="/tableChoice">Choix de Table</Link>

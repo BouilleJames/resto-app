@@ -1,68 +1,98 @@
-// import React, { useState } from "react";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useTableStatus } from "./TableContext";
+import "./TableSelection.css";
 
-// function TableSelection() {
-//   const [tableNumber, setTableNumber] = useState("");
-//   const [totalCovers, setTotalCovers] = useState("");
-//   const navigate = useNavigate();
+// Importez la fonction isTableOpen de TableChoice
+import { isTableOpen } from "./TableChoice";
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
+function TableSelection() {
+  const [tableNumber, setTableNumber] = useState("");
+  const [totalCovers, setTotalCovers] = useState("");
+  const navigate = useNavigate();
+  const { updateTableStatus } = useTableStatus();
 
-//     try {
-//       // Envoyez les données au serveur pour enregistrement dans la base de données
-//       const response = await axios.post("http://localhost:5000/api/tables", {
-//         tableNumber,
-//         totalCovers,
-//       });
+  useEffect(() => {
+    // Effectuez une vérification initiale pour voir si la table existe déjà
+    const checkTableExistence = async () => {
+      try {
+        const tableAlreadyOpen = isTableOpen(tableNumber);
 
-//       console.log("Réponse du serveur:", response.data);
+        if (tableAlreadyOpen) {
+          // La table existe déjà et est ouverte, affichez un message d'erreur
+          console.log("Cette table est déjà occupée.");
+          return;
+        }
 
-//       // Réinitialisez les champs après l'enregistrement
-//       setTableNumber("");
-//       setTotalCovers("");
-//       navigate("/dashboard");
-//     } catch (error) {
-//       if (error.response && error.response.data) {
-//         console.error("Erreur lors de l'enregistrement:", error.response.data);
-//       } else {
-//         console.error("Erreur lors de l'enregistrement:", error.message);
-//       }
-//     }
-//   };
+        // Si la table n'existe pas déjà, vous pouvez continuer avec la création
+        // ...
+      } catch (error) {
+        console.error("Erreur lors de la vérification de la table :", error);
+      }
+    };
 
-//   return (
-//     <div>
-//       <h2>Sélection de la Table :</h2>
-//       <form onSubmit={handleSubmit}>
-//         <div>
-//           <label>Numéro de Table:</label>
-//           <input
-//             type="number"
-//             value={tableNumber}
-//             onChange={(e) => setTableNumber(e.target.value)}
-//             required
-//           />
-//         </div>
-//         <div>
-//           <label>Nombre de Personnes:</label>
-//           <input
-//             type="number"
-//             value={totalCovers}
-//             onChange={(e) => setTotalCovers(e.target.value)}
-//             required
-//           />
-//         </div>
-//         <button type="submit">Enregistrer</button>
-//       </form>
-//     </div>
-//   );
-// }
+    if (tableNumber !== "") {
+      checkTableExistence();
+    }
+  }, [tableNumber]);
 
-// export default TableSelection;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-// code avant modification du 2023-08-21
+    try {
+      // Envoyez les données au serveur pour enregistrement dans la base de données
+      const response = await axios.post("https://localhost:5000/api/tables", {
+        tableNumber,
+        totalCovers,
+        status: "occupied",
+      });
+
+      console.log("Réponse du serveur:", response.data);
+
+      // Mettez à jour le statut de la table comme occupée
+      updateTableStatus(tableNumber, "occupied");
+
+      // Réinitialisez les champs après l'enregistrement
+      setTableNumber("");
+      setTotalCovers("");
+      navigate(`/dashboard/${tableNumber}`);
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement :", error.response.data);
+    }
+  };
+
+  return (
+    <div className="table-selection-container">
+      <h2>Sélection de la Table</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="align">
+          <label htmlFor="tablenumber">Numéro de Table:</label>
+          <input
+            type="number"
+            id="tablenumber"
+            value={tableNumber}
+            onChange={(e) => setTableNumber(e.target.value)}
+            required
+          />
+        </div>
+        <div className="align">
+          <label htmlFor="totalcovers">Nombre de Personnes:</label>
+          <input
+            type="number"
+            id="totalcovers"
+            value={totalCovers}
+            onChange={(e) => setTotalCovers(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Enregistrer</button>
+      </form>
+    </div>
+  );
+}
+
+export default TableSelection;
 
 // ------------------------------------------------------
 
@@ -135,92 +165,96 @@
 
 // export default TableSelection;
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useTableStatus } from "./TableContext";
-import "./TableSelection.css";
+// ----------------------------------------------------------
+// code avant modification du 2023-09-10 à 16.37
+// ----------------------------------------------------------
 
-function TableSelection() {
-  const [tableNumber, setTableNumber] = useState("");
-  const [totalCovers, setTotalCovers] = useState("");
-  const navigate = useNavigate();
-  const { updateTableStatus } = useTableStatus();
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom";
+// import { useTableStatus } from "./TableContext";
+// import "./TableSelection.css";
 
-  useEffect(() => {
-    // Effectuez une vérification initiale pour voir si la table existe déjà
-    const checkTableExistence = async () => {
-      try {
-        const response = await axios.get(
-          `https://localhost:5000/api/tables/${tableNumber}`
-        );
+// function TableSelection() {
+//   const [tableNumber, setTableNumber] = useState("");
+//   const [totalCovers, setTotalCovers] = useState("");
+//   const navigate = useNavigate();
+//   const { updateTableStatus } = useTableStatus();
 
-        if (response.data) {
-          // La table existe déjà, vous pouvez naviguer vers le tableau de bord
-          navigate(`/dashboard/${tableNumber}`);
-        }
-      } catch (error) {
-        console.error("Erreur lors de la vérification de la table :", error);
-      }
-    };
+//   useEffect(() => {
+//     // Effectuez une vérification initiale pour voir si la table existe déjà
+//     const checkTableExistence = async () => {
+//       try {
+//         const response = await axios.get(
+//           `https://localhost:5000/api/tables/${tableNumber}`
+//         );
 
-    if (tableNumber !== "") {
-      checkTableExistence();
-    }
-  }, [tableNumber, navigate]);
+//         if (response.data) {
+//           // La table existe déjà, vous pouvez naviguer vers le tableau de bord
+//           navigate(`/dashboard/${tableNumber}`);
+//         }
+//       } catch (error) {
+//         console.error("Erreur lors de la vérification de la table :", error);
+//       }
+//     };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//     if (tableNumber !== "") {
+//       checkTableExistence();
+//     }
+//   }, [tableNumber, navigate]);
 
-    try {
-      // Envoyez les données au serveur pour enregistrement dans la base de données
-      const response = await axios.post("https://localhost:5000/api/tables", {
-        tableNumber,
-        totalCovers,
-      });
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
 
-      console.log("Réponse du serveur:", response.data);
+//     try {
+//       // Envoyez les données au serveur pour enregistrement dans la base de données
+//       const response = await axios.post("https://localhost:5000/api/tables", {
+//         tableNumber,
+//         totalCovers,
+//       });
 
-      // Mettez à jour le statut de la table comme occupée
-      updateTableStatus(tableNumber, "occupied");
+//       console.log("Réponse du serveur:", response.data);
 
-      // Réinitialisez les champs après l'enregistrement
-      setTableNumber("");
-      setTotalCovers("");
-      navigate(`/dashboard/${tableNumber}`);
-    } catch (error) {
-      console.error("Erreur lors de l'enregistrement :", error.response.data);
-    }
-  };
+//       // Mettez à jour le statut de la table comme occupée
+//       updateTableStatus(tableNumber, "occupied");
 
-  return (
-    <div className="table-selection-container">
-      <h2>Sélection de la Table</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="align">
-          <label htmlFor="tablenumber">Numéro de Table:</label>
-          <input
-            type="number"
-            id="tablenumber"
-            value={tableNumber}
-            onChange={(e) => setTableNumber(e.target.value)}
-            required
-          />
-        </div>
-        <div className="align">
-          <label htmlFor="totalcovers">Nombre de Personnes:</label>
-          <input
-            type="number"
-            id="totalcovers"
-            value={totalCovers}
-            onChange={(e) => setTotalCovers(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Enregistrer</button>
-      </form>
-    </div>
-  );
-}
+//       // Réinitialisez les champs après l'enregistrement
+//       setTableNumber("");
+//       setTotalCovers("");
+//       navigate(`/dashboard/${tableNumber}`);
+//     } catch (error) {
+//       console.error("Erreur lors de l'enregistrement :", error.response.data);
+//     }
+//   };
 
-export default TableSelection;
+//   return (
+//     <div className="table-selection-container">
+//       <h2>Sélection de la Table</h2>
+//       <form onSubmit={handleSubmit}>
+//         <div className="align">
+//           <label htmlFor="tablenumber">Numéro de Table:</label>
+//           <input
+//             type="number"
+//             id="tablenumber"
+//             value={tableNumber}
+//             onChange={(e) => setTableNumber(e.target.value)}
+//             required
+//           />
+//         </div>
+//         <div className="align">
+//           <label htmlFor="totalcovers">Nombre de Personnes:</label>
+//           <input
+//             type="number"
+//             id="totalcovers"
+//             value={totalCovers}
+//             onChange={(e) => setTotalCovers(e.target.value)}
+//             required
+//           />
+//         </div>
+//         <button type="submit">Enregistrer</button>
+//       </form>
+//     </div>
+//   );
+// }
+
+// export default TableSelection;
