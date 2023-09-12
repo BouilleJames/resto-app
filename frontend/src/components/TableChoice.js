@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import "./TableChoice.css";
 import { useTableStatus } from "./TableContext"; // Importez le crochet useTableStatus
@@ -18,18 +18,41 @@ function TableChoice({ currentTable, onChangeTable }) {
   const [localTableStatus, setLocalTableStatus] = useState({}); // Renommez la variable locale
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableNumber, setTableNumber] = useState();
-  const {
-    tableStatus: contextTableStatus,
-    updateTableStatus,
-  } = useTableStatus(); // Utilisez le contexte pour obtenir le statut des tables
+  const { tableStatus, updateTableStatus } = useTableStatus(); // Utilisez le contexte pour obtenir le statut des tables
 
-  // useEffect(() => {
-  //   // Récupérer les commandes de la table actuelle depuis l'API
-  //   fetchTableOrders(currentTable);
+  useEffect(() => {
+    setTableStatus();
+  }, []);
 
-  //   // Récupérer le statut de toutes les tables
-  //   fetchTableStatus();
-  // }, [currentTable]);
+  const setTableStatus = () => {
+    if (tableStatus.length === 0) {
+      const totalTables = 36;
+      const newTableStatus = [];
+      for (let i = 1; i < 36; i++) {
+        const TableStatus = `Table_${i}={
+        isAvailable : true,
+        isOccupied : false,
+        isPendingOrder : false,
+      }`;
+        newTableStatus.push(TableStatus);
+      }
+
+      updateTableStatus(newTableStatus);
+    }
+  };
+
+  // Mettre à jour le statut de toutes les tables en ajoutant "ok" à chaque table
+  // newTableStatus.forEach((status, index) => {
+  //   // Utilisez l'index de la table pour la mettre à jour
+  //   updateTableStatus(index + 1, status);
+  // });
+  // if (tableStatus.length === 0) {
+  //   totalTables.forEach((element) => {
+  //     tableStatus.push({ tableNumber: element, status: "ok" });
+  //   });
+  //   updateTableStatus("ok");
+  // }
+  console.table(tableStatus[0]);
 
   const fetchTableOrders = async (tableNumber) => {
     try {

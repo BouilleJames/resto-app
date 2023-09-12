@@ -12,8 +12,8 @@ function StateTable({ tableNumber, onClose }) {
     marquer: useRef(null),
   };
   const [isAnyChoiceActive, setIsAnyChoiceActive] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(false);
-  const [isOccuped, setIsOccuped] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(true);
+  const [isOccupied, setIsOccupied] = useState(false);
   const [isPendingOrder, setIsPendingOrder] = useState(false);
 
   const handleChoiceChange = () => {
@@ -40,20 +40,24 @@ function StateTable({ tableNumber, onClose }) {
   const validStatus = () => {
     Object.entries(choiceRefs).forEach(([key, ref]) => {
       if (ref.current.classList.contains("active")) {
-        console.log(key);
+        console.log(tableNumber);
         if (key === "reprendre") {
           setIsPendingOrder(!isPendingOrder);
         } else if (key === "liberer") {
-          setIsOccuped(!isOccuped);
-          !isOccuped && navigate("/tableSelection");
+          setIsOccupied(!isOccupied);
+          !isOccupied && navigate("/tableSelection");
         } else {
           setIsAvailable(!isAvailable);
         }
       }
       ref.current.classList.remove("active");
     });
+    updateTableStatus(tableNumber, {
+      isPendingOrder,
+      isOccupied,
+      isAvailable,
+    });
   };
-
   return (
     <div className="screen">
       <div className="modal">
@@ -63,9 +67,9 @@ function StateTable({ tableNumber, onClose }) {
           ref={choiceRefs.liberer}
           onClick={() => handleClick("liberer")}
         >
-          {isOccuped ? "Libérer" : "Installer des clients à"} la table
+          {isOccupied ? "Libérer" : "Installer des clients à"} la table
         </div>
-        {isOccuped ? (
+        {isOccupied ? (
           <div
             className="choice"
             ref={choiceRefs.reprendre}

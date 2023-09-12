@@ -29,9 +29,9 @@ const Order = sequelize.define("orders", {
     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
   },
   status: {
-    type: Sequelize.ENUM("en_cours", "libre"),
+    type: Sequelize.ENUM("en_cours", "prete", "annulee"),
     allowNull: false,
-    defaultValue: "libre",
+    defaultValue: "en_cours",
   },
 });
 

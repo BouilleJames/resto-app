@@ -5,15 +5,32 @@ const TableContext = createContext();
 
 // Créez un composant fournisseur pour le contexte
 export const TableProvider = ({ children }) => {
-  const [tableStatus, setTableStatus] = useState({});
+  const [tableStatus, setTableStatus] = useState([]);
 
-  // Fonction pour mettre à jour le statut d'une table
-  const updateTableStatus = (tableNumber, status) => {
-    setTableStatus((prevStatus) => ({
-      ...prevStatus,
-      [tableNumber]: status,
-    }));
+  const updateTableStatus = (statusArray) => {
+    setTableStatus(statusArray);
   };
+
+  // Fonction pour mettre à jour le statut de toutes les tables dans le contexte
+  // const updateTableStatus = (tableNumber, status) => {
+  //   const updatedTableStatus = tableStatus.map((table) => {
+  //     if (table.tableNumber === tableNumber) {
+  //       return { ...table, status };
+  //     }
+  //     return table;
+  //   });
+  //   setTableStatus(updatedTableStatus);
+  // };
+  // const updateTableStatus = (status) => {
+  //   setTableStatus([status]);
+  // };
+
+  // Fonction pour mettre à jour le statut d'une table spécifique dans le contexte
+  // const updateTableStatus = (tableNumber, status) => {
+  //   const updatedTableStatus = [...tableStatus]; // Créez une copie du tableau existant
+  //   updatedTableStatus[tableNumber - 1] = status; // Mettez à jour le statut de la table spécifiée
+  //   setTableStatus(updatedTableStatus); // Mettez à jour le contexte avec le nouveau tableau
+  // };
 
   return (
     <TableContext.Provider value={{ tableStatus, updateTableStatus }}>

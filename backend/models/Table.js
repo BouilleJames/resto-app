@@ -18,11 +18,11 @@ const Table = sequelize.define("tables", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  status: {
-    type: Sequelize.ENUM("occupied", "libre"),
-    allowNull: false,
-    defaultValue: "libre",
-  },
+  // status: {
+  //   type: Sequelize.ENUM("isOccupied", "isAvailable", "isPendingOrder"),
+  //   allowNull: false,
+  //   defaultValue: "isAvailable",
+  // },
 });
 
 module.exports = Table;

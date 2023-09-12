@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  width: 90%;
+  width: 50%;
   margin: 0 auto;
   margin-top: 10%;
   padding: 20px;
@@ -16,12 +16,15 @@
 }
 
 .category-filter {
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.category-filter button {
+div .category-filter button {
   padding: 8px 12px;
   border: none;
   background-color: #161414;
@@ -36,7 +39,7 @@
 
 .menu-section,
 .cart-section {
-  width: 50%;
+  width: 80%;
   padding: 10px;
   border: 1px solid #ccc;
   margin: 10px;
@@ -118,6 +121,24 @@ button:hover {
 
 .remove-button:hover {
   background-color: #c82333;
+}
+
+#btnDashboard {
+  background-color: #227636;
+  width: 130px;
+  height: 50px;
+}
+
+#generateTicket1 {
+  background-color: #227636;
+  width: 130px;
+  height: 50px;
+}
+
+#generateTicket2 {
+  background-color: #227636;
+  width: 130px;
+  height: 50px;
 }
 
 @media screen and (max-width: 750px) {

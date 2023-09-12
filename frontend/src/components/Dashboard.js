@@ -206,7 +206,9 @@ function Dashboard() {
                 <span className="item-title">{item.title}</span>
                 <span className="item-price">{item.price}</span>
               </div>
-              <button onClick={() => addToCart(item)}>Ajouter au panier</button>
+              <button id="btnDashboard" onClick={() => addToCart(item)}>
+                Ajouter au panier
+              </button>
             </li>
           ))}
         </ul>

@@ -1,4 +1,9 @@
 /* Navigation.css */
+button .logout {
+  text-align: center;
+  width: 100px;
+}
+
 nav {
   background-color: #514848;
   overflow: hidden;

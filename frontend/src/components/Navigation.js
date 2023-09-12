@@ -40,7 +40,9 @@ function Navigation() {
         </>
       </ul>
       {(isLoggedIn || authToken) && (
-        <button onClick={logout}>Se déconnecter</button>
+        <button className="logout" onClick={logout}>
+          Se déconnecter
+        </button>
       )}
     </nav>
   );
