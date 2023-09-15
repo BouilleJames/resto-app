@@ -1,5 +1,5 @@
 /* Navigation.css */
-button .logout {
+/* button .logout {
   text-align: center;
   width: 100px;
 }
@@ -29,10 +29,10 @@ nav a {
 
 nav a:hover {
   color: #ffc107;
-}
+}*/
 
 /* Responsive styles */
-@media screen and (max-width: 768px) {
+/*@media screen and (max-width: 768px) {
   nav ul {
     flex-direction: column;
     align-items: center;
@@ -50,4 +50,163 @@ nav a:hover {
     max-width: 100%;
     height: auto;
   }
+} */
+/* Navigation.css */
+nav {
+  background-color: #514848;
+  overflow: hidden;
 }
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between; /* Espacement équilibré entre les éléments */
+  align-items: center; /* Centrer verticalement les éléments */
+  padding: 10px; /* Ajouter de l'espace autour de la liste */
+}
+
+nav li {
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+  font-size: 1.4rem;
+}
+
+nav a:hover {
+  color: #ffc107;
+}
+
+button.logout {
+  background-color: #514848;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4rem;
+  padding: 10px 20px; /* Ajouter de l'espace au bouton */
+  border-radius: 5px; /* Coins arrondis pour le bouton */
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav a {
+    font-size: 1.2rem;
+    margin: 10px 0;
+  }
+
+  button.logout {
+    font-size: 1.2rem;
+    width: 100%; /* Remplir la largeur de l'écran */
+  }
+}
+
+/* Navigation.css */
+/* nav {
+  background-color: #514848;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav li {
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+  font-size: 1.4rem;
+  margin: 0 20px;
+}
+
+nav a:hover {
+  color: #ffc107;
+}
+
+button.logout {
+  background-color: #514848;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+
+.burger-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+.burger-button.open .bar:nth-child(1) {
+  transform: translateY(4px) rotate(45deg);
+}
+
+.burger-button.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-button.open .bar:nth-child(3) {
+  transform: translateY(-4px) rotate(-45deg);
+}
+
+.nav-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style-type: none;
+  padding: 0;
+}
+
+.nav-links.open {
+  flex-direction: column;
+  position: absolute;
+  top: 65px;
+  left: 0;
+  width: 100%;
+  background-color: #514848;
+  transition: top 0.3s;
+}
+
+.nav-links.open li {
+  margin: 10px 0;
+  text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  .burger-button {
+    display: block;
+  }
+
+  nav ul {
+    display: none;
+  }
+
+  nav.open ul {
+    display: flex;
+  }
+}
+*/

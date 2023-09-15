@@ -52,6 +52,10 @@ div .category-filter button {
   border-bottom: 1px solid #ccc;
 }
 
+.menu-section ul li {
+  padding: 4;
+}
+
 ul {
   list-style: none;
   padding: 0;
@@ -143,11 +147,12 @@ button:hover {
 
 @media screen and (max-width: 750px) {
   .dashboard-container {
+    width: 100%;
     padding: 10px;
   }
-  .menu-section,
-  .cart-section {
-    width: 80%;
+  div .menu-section,
+  div .cart-section {
+    width: 100%;
     margin: 10px 0;
   }
 }
@@ -161,6 +166,16 @@ button:hover {
     width: 100%;
     margin: 10px 0;
   }
+
+  .menu-section li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    /* border-bottom: 1px solid #dddddd; */
+    padding-bottom: 5px;
+  }
+
   .generate-button,
   .generate-button:hover {
     background-color: #227636;
