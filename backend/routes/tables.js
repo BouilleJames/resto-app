@@ -21,6 +21,8 @@ router.post("/api/tables", async (req, res) => {
   }
 });
 
+router.get("/api/tables", tablesController.getTableStatus);
+
 router.get("/api/tables/status", tablesController.getTableStatus);
 
 module.exports = router;

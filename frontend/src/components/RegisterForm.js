@@ -61,6 +61,7 @@ const RegisterForm = () => {
             id="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
+            className="role-dropdown"
           >
             <option value="user">Utilisateur</option>
             <option value="admin">Administrateur</option>
